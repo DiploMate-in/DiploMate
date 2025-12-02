@@ -24,6 +24,7 @@ export type Database = {
           file_size: string | null
           file_url: string | null
           id: string
+          is_published: boolean | null
           original_price: number | null
           preview_images: string[] | null
           price: number
@@ -44,6 +45,7 @@ export type Database = {
           file_size?: string | null
           file_url?: string | null
           id?: string
+          is_published?: boolean | null
           original_price?: number | null
           preview_images?: string[] | null
           price?: number
@@ -64,6 +66,7 @@ export type Database = {
           file_size?: string | null
           file_url?: string | null
           id?: string
+          is_published?: boolean | null
           original_price?: number | null
           preview_images?: string[] | null
           price?: number
@@ -92,6 +95,48 @@ export type Database = {
           },
         ]
       }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          updated_at: string
+          used_count: number | null
+          valid_from: string
+          valid_to: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_type: string
+          discount_value: number
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number | null
+          valid_from?: string
+          valid_to: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number | null
+          valid_from?: string
+          valid_to?: string
+        }
+        Relationships: []
+      }
       departments: {
         Row: {
           code: string
@@ -99,6 +144,7 @@ export type Database = {
           created_at: string
           icon: string | null
           id: string
+          is_active: boolean | null
           name: string
         }
         Insert: {
@@ -107,6 +153,7 @@ export type Database = {
           created_at?: string
           icon?: string | null
           id?: string
+          is_active?: boolean | null
           name: string
         }
         Update: {
@@ -115,6 +162,7 @@ export type Database = {
           created_at?: string
           icon?: string | null
           id?: string
+          is_active?: boolean | null
           name?: string
         }
         Relationships: []
@@ -166,11 +214,39 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_blocked: boolean | null
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          is_blocked?: boolean | null
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_blocked?: boolean | null
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       purchases: {
         Row: {
           content_item_id: string
           downloads_remaining: number
           id: string
+          payment_provider: string | null
           price: number
           purchased_at: string
           status: string
@@ -180,6 +256,7 @@ export type Database = {
           content_item_id: string
           downloads_remaining?: number
           id?: string
+          payment_provider?: string | null
           price: number
           purchased_at?: string
           status?: string
@@ -189,6 +266,7 @@ export type Database = {
           content_item_id?: string
           downloads_remaining?: number
           id?: string
+          payment_provider?: string | null
           price?: number
           purchased_at?: string
           status?: string
@@ -211,6 +289,7 @@ export type Database = {
           id: string
           name: string
           number: number
+          order_index: number | null
         }
         Insert: {
           created_at?: string
@@ -218,6 +297,7 @@ export type Database = {
           id?: string
           name: string
           number: number
+          order_index?: number | null
         }
         Update: {
           created_at?: string
@@ -225,6 +305,7 @@ export type Database = {
           id?: string
           name?: string
           number?: number
+          order_index?: number | null
         }
         Relationships: [
           {
@@ -235,6 +316,102 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      settings: {
+        Row: {
+          created_at: string
+          global_download_limit: number | null
+          id: string
+          privacy_url: string | null
+          refund_policy_url: string | null
+          terms_url: string | null
+          updated_at: string
+          watermark_enabled: boolean | null
+          whatsapp_group_url: string | null
+          whatsapp_popup_delay_seconds: number | null
+          whatsapp_popup_enabled: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          global_download_limit?: number | null
+          id?: string
+          privacy_url?: string | null
+          refund_policy_url?: string | null
+          terms_url?: string | null
+          updated_at?: string
+          watermark_enabled?: boolean | null
+          whatsapp_group_url?: string | null
+          whatsapp_popup_delay_seconds?: number | null
+          whatsapp_popup_enabled?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          global_download_limit?: number | null
+          id?: string
+          privacy_url?: string | null
+          refund_policy_url?: string | null
+          terms_url?: string | null
+          updated_at?: string
+          watermark_enabled?: boolean | null
+          whatsapp_group_url?: string | null
+          whatsapp_popup_delay_seconds?: number | null
+          whatsapp_popup_enabled?: boolean | null
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
       }
       wishlist: {
         Row: {
@@ -270,10 +447,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -400,6 +583,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

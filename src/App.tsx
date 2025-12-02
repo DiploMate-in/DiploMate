@@ -21,6 +21,17 @@ import { PrivacyPolicyPage } from "@/pages/PrivacyPolicyPage";
 import { TermsConditionsPage } from "@/pages/TermsConditionsPage";
 import NotFound from "./pages/NotFound";
 
+// Admin imports
+import { AdminLogin } from "@/pages/admin/AdminLogin";
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import { AdminDashboard } from "@/pages/admin/AdminDashboard";
+import { AdminContent } from "@/pages/admin/AdminContent";
+import { AdminOrders } from "@/pages/admin/AdminOrders";
+import { AdminUsers } from "@/pages/admin/AdminUsers";
+import { AdminCoupons } from "@/pages/admin/AdminCoupons";
+import { AdminSupport } from "@/pages/admin/AdminSupport";
+import { AdminSettings } from "@/pages/admin/AdminSettings";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,6 +42,7 @@ const App = () => (
         <Sonner position="top-center" />
         <BrowserRouter>
           <Routes>
+            {/* Student/Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/notes" element={<NotesPage />} />
             <Route path="/microprojects" element={<MicroprojectsPage />} />
@@ -46,6 +58,19 @@ const App = () => (
             <Route path="/terms-conditions" element={<TermsConditionsPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="content/:type" element={<AdminContent />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="coupons" element={<AdminCoupons />} />
+              <Route path="support" element={<AdminSupport />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
