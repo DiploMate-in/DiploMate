@@ -3,6 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DepartmentStudyMaterials from "./pages/DepartmentStudyMaterials";
+import StudyMaterialPage from "./pages/StudyMaterialPage";
+import SubjectContentPage from "./pages/SubjectContentPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import { AdminSubjects } from "./pages/admin/AdminSubjects";
 import { AppProvider } from "@/contexts/AppContext";
 import { HomePage } from "@/pages/HomePage";
 import { NotesPage } from "@/pages/NotesPage";
@@ -47,7 +52,10 @@ const App = () => (
             <Route path="/notes" element={<NotesPage />} />
             <Route path="/microprojects" element={<MicroprojectsPage />} />
             <Route path="/capstone-projects" element={<CapstoneProjectsPage />} />
-            <Route path="/department/:code" element={<DepartmentPage />} />
+            <Route path="/department/:deptCode" element={<DepartmentStudyMaterials />} />
+            <Route path="/department/:deptCode/:materialType" element={<StudyMaterialPage />} />
+            <Route path="/department/:deptCode/:materialType/:subjectId" element={<SubjectContentPage />} />
+            <Route path="/projects/:projectType" element={<ProjectsPage />} />
             <Route path="/content/:id" element={<ContentDetail />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/wishlist" element={<Wishlist />} />
@@ -64,6 +72,7 @@ const App = () => (
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="content/:type" element={<AdminContent />} />
+              <Route path="subjects" element={<AdminSubjects />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="coupons" element={<AdminCoupons />} />

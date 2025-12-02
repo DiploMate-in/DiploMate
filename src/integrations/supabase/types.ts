@@ -30,7 +30,11 @@ export type Database = {
           price: number
           rating: number | null
           review_count: number | null
+          scheme: Database["public"]["Enums"]["scheme_type"] | null
           semester_id: string
+          subject_code: string | null
+          subject_id: string | null
+          subject_name: string | null
           tags: string[] | null
           title: string
           type: string
@@ -51,7 +55,11 @@ export type Database = {
           price?: number
           rating?: number | null
           review_count?: number | null
+          scheme?: Database["public"]["Enums"]["scheme_type"] | null
           semester_id: string
+          subject_code?: string | null
+          subject_id?: string | null
+          subject_name?: string | null
           tags?: string[] | null
           title: string
           type: string
@@ -72,7 +80,11 @@ export type Database = {
           price?: number
           rating?: number | null
           review_count?: number | null
+          scheme?: Database["public"]["Enums"]["scheme_type"] | null
           semester_id?: string
+          subject_code?: string | null
+          subject_id?: string | null
+          subject_name?: string | null
           tags?: string[] | null
           title?: string
           type?: string
@@ -91,6 +103,13 @@ export type Database = {
             columns: ["semester_id"]
             isOneToOne: false
             referencedRelation: "semesters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_items_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
             referencedColumns: ["id"]
           },
         ]
@@ -359,6 +378,54 @@ export type Database = {
         }
         Relationships: []
       }
+      subjects: {
+        Row: {
+          code: string
+          created_at: string
+          department_id: string
+          id: string
+          is_active: boolean | null
+          name: string
+          scheme: Database["public"]["Enums"]["scheme_type"]
+          semester_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          department_id: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          scheme?: Database["public"]["Enums"]["scheme_type"]
+          semester_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          department_id?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          scheme?: Database["public"]["Enums"]["scheme_type"]
+          semester_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subjects_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subjects_semester_id_fkey"
+            columns: ["semester_id"]
+            isOneToOne: false
+            referencedRelation: "semesters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_tickets: {
         Row: {
           created_at: string
@@ -457,6 +524,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      scheme_type: "K" | "I"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -585,6 +653,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      scheme_type: ["K", "I"],
     },
   },
 } as const
