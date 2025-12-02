@@ -31,6 +31,7 @@ const typeLabels: Record<string, string> = {
 export function ContentFormDialog({ open, onOpenChange, contentType, editingItem, onSuccess }: ContentFormDialogProps) {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: '',
