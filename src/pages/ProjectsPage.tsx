@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ModernNavbar } from '@/components/layout/ModernNavbar';
@@ -27,37 +27,51 @@ interface Department {
   code: string;
 }
 
-const projectTypes: Record<string, { title: string; subtitle: string; icon: React.ElementType; color: string }> = {
+const projectTypes: Record<string, { title: string; subtitle: string; icon: React.ElementType; color: string; dbType: string }> = {
   microprojects: { 
     title: 'Microprojects', 
     subtitle: 'Ready-to-submit microprojects with documentation',
     icon: FolderKanban,
-    color: 'text-blue-500'
+    color: 'text-blue-500',
+    dbType: 'microproject'
   },
   capstone: { 
     title: 'Capstone Projects', 
     subtitle: 'Complete final year projects with documentation',
     icon: Sparkles,
-    color: 'text-amber-500'
+    color: 'text-amber-500',
+    dbType: 'capstone'
   },
   'custom-build': { 
     title: 'Custom Build Request', 
     subtitle: 'Get a custom project built for your requirements',
     icon: Wrench,
-    color: 'text-green-500'
+    color: 'text-green-500',
+    dbType: 'custom_build'
   },
 };
 
 export default function ProjectsPage() {
-  const { projectType } = useParams<{ projectType: string }>();
+  const { projectType: paramType } = useParams<{ projectType: string }>();
+  const location = useLocation();
   const [projects, setProjects] = useState<Project[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [search, setSearch] = useState('');
   const [filterDept, setFilterDept] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  const typeInfo = projectType ? projectTypes[projectType] : null;
-  const dbType = projectType === 'custom-build' ? 'custom_build' : projectType;
+  // Determine project type from URL path or param
+  const getProjectType = (): string => {
+    if (paramType) return paramType;
+    if (location.pathname === '/microprojects') return 'microprojects';
+    if (location.pathname === '/capstone-projects') return 'capstone';
+    if (location.pathname === '/custom-build') return 'custom-build';
+    return 'microprojects';
+  };
+
+  const projectType = getProjectType();
+  const typeInfo = projectTypes[projectType];
+  const dbType = typeInfo?.dbType || projectType;
 
   useEffect(() => {
     const fetchData = async () => {
