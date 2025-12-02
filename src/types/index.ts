@@ -40,7 +40,7 @@ export type Purchase = {
   userId: string;
   contentItemId: string;
   price: number;
-  status: 'completed' | 'pending' | 'failed';
+  status: 'completed' | 'pending' | 'refunded';
   purchasedAt: string;
   downloadsRemaining: number;
 };

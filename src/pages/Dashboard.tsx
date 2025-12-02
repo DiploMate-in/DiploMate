@@ -48,7 +48,7 @@ export function Dashboard() {
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
-            Hey {user?.name}! 👋
+            Hey {user?.user_metadata?.name || user?.email?.split('@')[0]}! 👋
           </h1>
           <p className="text-muted-foreground">Welcome back to your dashboard</p>
         </div>

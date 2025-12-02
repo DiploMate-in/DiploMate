@@ -109,7 +109,7 @@ export function Navbar() {
                 <Link to="/dashboard">
                   <Button variant="ghost" size="sm" className="gap-2">
                     <User className="h-4 w-4" />
-                    {user?.name}
+                    {user?.user_metadata?.name || user?.email?.split('@')[0]}
                   </Button>
                 </Link>
                 <Button variant="ghost" size="icon" onClick={logout}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,13 +8,20 @@ import { cn } from '@/lib/utils';
 
 export function Signup() {
   const navigate = useNavigate();
-  const { signup } = useApp();
+  const { signup, isAuthenticated, isLoading: authLoading } = useApp();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({});
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
 
   const validate = () => {
     const newErrors: { name?: string; email?: string; password?: string } = {};
@@ -47,16 +54,28 @@ export function Signup() {
     if (!validate()) return;
     
     setIsLoading(true);
-    const success = await signup(name.trim(), email, password);
+    const { error } = await signup(name.trim(), email, password);
     setIsLoading(false);
     
-    if (success) {
-      toast.success('Account created! Welcome to DiploMate');
-      navigate('/dashboard');
+    if (!error) {
+      toast.success('Account created! Please check your email to confirm your account.');
+      navigate('/login');
     } else {
-      toast.error('Something went wrong. Please try again.');
+      if (error.includes('User already registered')) {
+        toast.error('An account with this email already exists');
+      } else {
+        toast.error(error);
+      }
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-background to-secondary/30">
