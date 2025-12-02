@@ -5,21 +5,22 @@ import { ModernNavbar } from '@/components/layout/ModernNavbar';
 import { FooterSection } from '@/components/home/FooterSection';
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Star, Sparkles, Target } from 'lucide-react';
+import { ArrowLeft, Star, Sparkles, Target, FileText, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface Subject {
+interface ContentItem {
   id: string;
-  name: string;
-  code: string;
-  department_id: string;
-  semester_id: string;
-  scheme: string;
-}
-
-interface ContentCount {
-  subject_id: string;
-  count: number;
+  title: string;
+  description: string | null;
+  price: number;
+  original_price: number | null;
+  file_format: string | null;
+  file_size: string | null;
+  rating: number | null;
+  preview_images: string[] | null;
+  tags: string[] | null;
+  subject_name: string | null;
+  subject_code: string | null;
 }
 
 interface Department {
@@ -48,8 +49,7 @@ export default function StudyMaterialPage() {
   const { deptCode, materialType } = useParams<{ deptCode: string; materialType: string }>();
   const [department, setDepartment] = useState<Department | null>(null);
   const [semesters, setSemesters] = useState<Semester[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [contentCounts, setContentCounts] = useState<ContentCount[]>([]);
+  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [selectedScheme, setSelectedScheme] = useState<'K' | 'I'>('K');
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,39 +89,26 @@ export default function StudyMaterialPage() {
   }, [deptCode]);
 
   useEffect(() => {
-    const fetchSubjects = async () => {
-      if (!department || !selectedSemester) return;
+    const fetchContent = async () => {
+      if (!department || !selectedSemester || !materialType) return;
 
-      const { data: subjectData } = await supabase
-        .from('subjects')
-        .select('*')
+      const { data, error } = await supabase
+        .from('content_items')
+        .select('id, title, description, price, original_price, file_format, file_size, rating, preview_images, tags, subject_name, subject_code')
         .eq('department_id', department.id)
         .eq('semester_id', selectedSemester)
         .eq('scheme', selectedScheme)
-        .eq('is_active', true);
+        .eq('type', materialType)
+        .eq('is_published', true);
 
-      setSubjects(subjectData || []);
-
-      // Fetch content counts for each subject
-      if (subjectData && subjectData.length > 0 && materialType) {
-        const { data: countData } = await supabase
-          .from('content_items')
-          .select('subject_id')
-          .eq('type', materialType)
-          .eq('is_published', true)
-          .in('subject_id', subjectData.map(s => s.id));
-
-        if (countData) {
-          const counts = subjectData.map(sub => ({
-            subject_id: sub.id,
-            count: countData.filter(c => c.subject_id === sub.id).length
-          }));
-          setContentCounts(counts);
-        }
+      if (error) {
+        console.error('Error fetching content:', error);
       }
+      
+      setContentItems(data || []);
     };
 
-    fetchSubjects();
+    fetchContent();
   }, [department, selectedSemester, selectedScheme, materialType]);
 
   const selectedSemesterData = semesters.find(s => s.id === selectedSemester);
@@ -173,7 +160,7 @@ export default function StudyMaterialPage() {
 
           <div className="flex flex-wrap gap-3 mt-6">
             <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-              <span className="w-2 h-2 bg-white rounded-full"></span> All Subjects
+              <span className="w-2 h-2 bg-white rounded-full"></span> All Content
             </span>
             <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
               <Target className="w-3 h-3" /> Exam Ready
@@ -238,49 +225,101 @@ export default function StudyMaterialPage() {
           </div>
         </div>
 
-        {/* Subject Cards */}
+        {/* Content Cards */}
         <h2 className="text-xl md:text-2xl font-bold text-foreground mb-6">
-          {materialInfo.title.split(' ')[0]} for Semester {selectedSemesterData?.number || 1} ({selectedScheme} Scheme)
+          {materialInfo.title} for Semester {selectedSemesterData?.number || 1} ({selectedScheme} Scheme)
         </h2>
 
-        {subjects.length === 0 ? (
+        {contentItems.length === 0 ? (
           <div className="text-center py-12 bg-card border border-border rounded-xl">
-            <p className="text-muted-foreground">No subjects found for this selection.</p>
-            <p className="text-sm text-muted-foreground mt-2">Admins can add subjects from the admin dashboard.</p>
+            <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No {materialInfo.title.toLowerCase()} available for this selection.</p>
+            <p className="text-sm text-muted-foreground mt-2">Check back later or try different filters.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {subjects.map((subject) => {
-              const count = contentCounts.find(c => c.subject_id === subject.id)?.count || 0;
-              return (
-                <div 
-                  key={subject.id}
-                  className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all duration-300"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                      <Star className="w-6 h-6 text-amber-500" />
-                    </div>
-                    <span className="bg-muted text-muted-foreground px-3 py-1 rounded-full text-xs font-medium">
-                      {subject.code}
-                    </span>
+            {contentItems.map((item) => (
+              <div 
+                key={item.id}
+                className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
+              >
+                {/* Preview Image */}
+                {item.preview_images && item.preview_images.length > 0 ? (
+                  <div className="h-40 bg-muted overflow-hidden">
+                    <img 
+                      src={item.preview_images[0]} 
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-40 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                    <FileText className="w-16 h-16 text-primary/30" />
+                  </div>
+                )}
+
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <h3 className="text-lg font-semibold text-foreground line-clamp-2">{item.title}</h3>
+                    {item.subject_code && (
+                      <span className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs font-medium shrink-0">
+                        {item.subject_code}
+                      </span>
+                    )}
                   </div>
                   
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{subject.name}</h3>
-                  
-                  <div className="mb-4">
-                    <span className="text-2xl font-bold text-foreground">{count}</span>
-                    <span className="text-sm text-muted-foreground ml-1">{materialInfo.title.split(' ')[0]} Available</span>
+                  {item.description && (
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
+                  )}
+
+                  {/* Tags */}
+                  {item.tags && item.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {item.tags.slice(0, 3).map((tag, idx) => (
+                        <span key={idx} className="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Meta Info */}
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+                    {item.file_format && (
+                      <span className="flex items-center gap-1">
+                        <FileText className="w-3 h-3" />
+                        {item.file_format.toUpperCase()}
+                      </span>
+                    )}
+                    {item.file_size && (
+                      <span className="flex items-center gap-1">
+                        <Download className="w-3 h-3" />
+                        {item.file_size}
+                      </span>
+                    )}
+                    {item.rating && (
+                      <span className="flex items-center gap-1">
+                        <Star className="w-3 h-3 text-amber-500" />
+                        {item.rating}
+                      </span>
+                    )}
                   </div>
 
-                  <Link to={`/department/${deptCode}/${materialType}/${subject.id}`}>
-                    <Button className="w-full">
-                      View {materialInfo.title.split(' ')[0]}
-                    </Button>
-                  </Link>
+                  {/* Price & Action */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold text-foreground">₹{item.price}</span>
+                      {item.original_price && item.original_price > item.price && (
+                        <span className="text-sm text-muted-foreground line-through">₹{item.original_price}</span>
+                      )}
+                    </div>
+                    <Link to={`/content/${item.id}`}>
+                      <Button size="sm">View Details</Button>
+                    </Link>
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         )}
       </div>
