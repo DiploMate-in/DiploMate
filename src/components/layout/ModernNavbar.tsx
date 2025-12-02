@@ -246,7 +246,7 @@ export function ModernNavbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[68px] bg-white z-40 overflow-y-auto animate-slide-down">
+        <div className="lg:hidden fixed inset-x-0 top-[68px] bottom-0 bg-white z-[100] overflow-y-auto animate-slide-down">
           <div className="px-5 py-6">
             {/* Notes Section */}
             <div className="mb-2">
