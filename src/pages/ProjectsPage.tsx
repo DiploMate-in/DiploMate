@@ -111,7 +111,7 @@ export default function ProjectsPage() {
       <div className="min-h-screen bg-background">
         <ModernNavbar />
         
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 pt-24 pb-12">
           <div className="max-w-2xl mx-auto text-center">
             <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Wrench className="w-10 h-10 text-green-600" />
@@ -162,7 +162,7 @@ export default function ProjectsPage() {
     <div className="min-h-screen bg-background">
       <ModernNavbar />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-24 pb-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">

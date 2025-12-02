@@ -117,7 +117,7 @@ export default function DepartmentStudyMaterials() {
       <ModernNavbar />
       
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-12 md:py-16">
+      <div className="pt-20 md:pt-24 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground pb-12 md:pb-16">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
