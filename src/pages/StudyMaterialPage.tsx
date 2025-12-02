@@ -138,7 +138,7 @@ export default function StudyMaterialPage() {
       <ModernNavbar />
       
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-10 md:py-14">
+      <div className="pt-20 md:pt-24 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground pb-10 md:pb-14">
         <div className="container mx-auto px-4">
           <Link 
             to={`/department/${deptCode}`}

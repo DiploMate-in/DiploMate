@@ -11,9 +11,6 @@ import { AdminSubjects } from "./pages/admin/AdminSubjects";
 import { AppProvider } from "@/contexts/AppContext";
 import { HomePage } from "@/pages/HomePage";
 import { NotesPage } from "@/pages/NotesPage";
-import { MicroprojectsPage } from "@/pages/MicroprojectsPage";
-import { CapstoneProjectsPage } from "@/pages/CapstoneProjectsPage";
-import { DepartmentPage } from "@/pages/DepartmentPage";
 import { ContentDetail } from "@/pages/ContentDetail";
 import { Dashboard } from "@/pages/Dashboard";
 import { Wishlist } from "@/pages/Wishlist";
@@ -21,7 +18,6 @@ import { Support } from "@/pages/Support";
 import { Login } from "@/pages/Login";
 import { Signup } from "@/pages/Signup";
 import { FAQsPage } from "@/pages/FAQsPage";
-import { CustomBuildPage } from "@/pages/CustomBuildPage";
 import { PrivacyPolicyPage } from "@/pages/PrivacyPolicyPage";
 import { TermsConditionsPage } from "@/pages/TermsConditionsPage";
 import NotFound from "./pages/NotFound";
@@ -62,7 +58,6 @@ const App = () => (
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/support" element={<Support />} />
             <Route path="/faqs" element={<FAQsPage />} />
-            <Route path="/custom-build" element={<CustomBuildPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-conditions" element={<TermsConditionsPage />} />
             <Route path="/login" element={<Login />} />
