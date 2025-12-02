@@ -14,6 +14,143 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_items: {
+        Row: {
+          created_at: string
+          department_id: string
+          description: string | null
+          downloads_allowed: number
+          file_format: string | null
+          file_size: string | null
+          file_url: string | null
+          id: string
+          original_price: number | null
+          preview_images: string[] | null
+          price: number
+          rating: number | null
+          review_count: number | null
+          semester_id: string
+          tags: string[] | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department_id: string
+          description?: string | null
+          downloads_allowed?: number
+          file_format?: string | null
+          file_size?: string | null
+          file_url?: string | null
+          id?: string
+          original_price?: number | null
+          preview_images?: string[] | null
+          price?: number
+          rating?: number | null
+          review_count?: number | null
+          semester_id: string
+          tags?: string[] | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department_id?: string
+          description?: string | null
+          downloads_allowed?: number
+          file_format?: string | null
+          file_size?: string | null
+          file_url?: string | null
+          id?: string
+          original_price?: number | null
+          preview_images?: string[] | null
+          price?: number
+          rating?: number | null
+          review_count?: number | null
+          semester_id?: string
+          tags?: string[] | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_items_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_items_semester_id_fkey"
+            columns: ["semester_id"]
+            isOneToOne: false
+            referencedRelation: "semesters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      departments: {
+        Row: {
+          code: string
+          color: string | null
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      download_logs: {
+        Row: {
+          content_item_id: string
+          downloaded_at: string
+          id: string
+          ip_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          content_item_id: string
+          downloaded_at?: string
+          id?: string
+          ip_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          content_item_id?: string
+          downloaded_at?: string
+          id?: string
+          ip_hash?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_logs_content_item_id_fkey"
+            columns: ["content_item_id"]
+            isOneToOne: false
+            referencedRelation: "content_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kv_store_def08d54: {
         Row: {
           key: string
@@ -28,6 +165,105 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      purchases: {
+        Row: {
+          content_item_id: string
+          downloads_remaining: number
+          id: string
+          price: number
+          purchased_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          content_item_id: string
+          downloads_remaining?: number
+          id?: string
+          price: number
+          purchased_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          content_item_id?: string
+          downloads_remaining?: number
+          id?: string
+          price?: number
+          purchased_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_content_item_id_fkey"
+            columns: ["content_item_id"]
+            isOneToOne: false
+            referencedRelation: "content_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      semesters: {
+        Row: {
+          created_at: string
+          department_id: string
+          id: string
+          name: string
+          number: number
+        }
+        Insert: {
+          created_at?: string
+          department_id: string
+          id?: string
+          name: string
+          number: number
+        }
+        Update: {
+          created_at?: string
+          department_id?: string
+          id?: string
+          name?: string
+          number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "semesters_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wishlist: {
+        Row: {
+          content_item_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content_item_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content_item_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlist_content_item_id_fkey"
+            columns: ["content_item_id"]
+            isOneToOne: false
+            referencedRelation: "content_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

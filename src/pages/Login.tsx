@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,12 +8,19 @@ import { cn } from '@/lib/utils';
 
 export function Login() {
   const navigate = useNavigate();
-  const { login } = useApp();
+  const { login, isAuthenticated, isLoading: authLoading } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -40,16 +47,30 @@ export function Login() {
     if (!validate()) return;
     
     setIsLoading(true);
-    const success = await login(email, password);
+    const { error } = await login(email, password);
     setIsLoading(false);
     
-    if (success) {
+    if (!error) {
       toast.success('Welcome back!');
       navigate('/dashboard');
     } else {
-      toast.error('Invalid email or password');
+      if (error.includes('Invalid login credentials')) {
+        toast.error('Invalid email or password');
+      } else if (error.includes('Email not confirmed')) {
+        toast.error('Please check your email to confirm your account');
+      } else {
+        toast.error(error);
+      }
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-background to-secondary/30">
