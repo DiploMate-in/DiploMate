@@ -146,12 +146,16 @@
   /* Gradient text */
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--dm-blue)) 0%, hsl(var(--dm-teal)) 100%);
+    background-image: linear-gradient(135deg, #2F6FED 0%, #35C2A0 100%);
   }
 
   /* Gradient backgrounds */
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--dm-blue)) 0%, hsl(var(--dm-teal)) 100%);
+    background: linear-gradient(135deg, #2F6FED 0%, #35C2A0 100%);
+  }
+
+  .gradient-bg {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFF 100%);
   }
 
   .gradient-surface {
@@ -160,10 +164,13 @@
 
   /* Glass effect */
   .glass {
-    @apply bg-background/80 backdrop-blur-lg border border-border/50;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   }
 
-  /* Card hover effect */
+  /* Card effects */
   .card-interactive {
     @apply transition-all duration-200;
     box-shadow: var(--shadow-card);
@@ -172,6 +179,23 @@
   .card-interactive:hover {
     box-shadow: var(--shadow-card-hover);
     @apply -translate-y-0.5;
+  }
+
+  .card-shadow {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-shadow-hover:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Button shadows */
+  .btn-shadow-primary {
+    box-shadow: 0 4px 20px rgba(47, 111, 237, 0.3);
+  }
+
+  .btn-shadow-accent {
+    box-shadow: 0 4px 20px rgba(53, 194, 160, 0.3);
   }
 
   /* Safe area padding for mobile */
@@ -185,11 +209,15 @@
 
   /* Animation utilities */
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.5s ease-out;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.4s ease-out;
+    animation: slideUp 0.6s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out;
   }
 
   .animate-scale-in {
@@ -205,6 +233,17 @@
     from { 
       opacity: 0; 
       transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  @keyframes slideDown {
+    from { 
+      opacity: 0; 
+      transform: translateY(-10px); 
     }
     to { 
       opacity: 1; 
@@ -231,4 +270,10 @@
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
+
+  /* Stagger animations */
+  .stagger-1 { animation-delay: 100ms; }
+  .stagger-2 { animation-delay: 200ms; }
+  .stagger-3 { animation-delay: 300ms; }
+  .stagger-4 { animation-delay: 400ms; }
 }
