@@ -50,8 +50,9 @@ const App = () => (
             {/* Student/Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/notes" element={<NotesPage />} />
-            <Route path="/microprojects" element={<MicroprojectsPage />} />
-            <Route path="/capstone-projects" element={<CapstoneProjectsPage />} />
+            <Route path="/microprojects" element={<ProjectsPage />} />
+            <Route path="/capstone-projects" element={<ProjectsPage />} />
+            <Route path="/custom-build" element={<ProjectsPage />} />
             <Route path="/department/:deptCode" element={<DepartmentStudyMaterials />} />
             <Route path="/department/:deptCode/:materialType" element={<StudyMaterialPage />} />
             <Route path="/department/:deptCode/:materialType/:subjectId" element={<SubjectContentPage />} />
