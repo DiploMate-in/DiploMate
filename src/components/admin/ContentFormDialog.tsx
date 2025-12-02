@@ -18,7 +18,15 @@ interface ContentFormDialogProps {
 }
 
 interface Department { id: string; name: string; }
-interface Semester { id: string; name: string; department_id: string; }
+interface Semester { id: string; name: string; number: number; department_id: string; }
+interface Subject { id: string; name: string; code: string; department_id: string; semester_id: string; scheme: string; }
+
+const studyMaterialTypes = ['vvimp', 'notes', 'imp_questions', 'pyq', 'lab_manuals', 'model_answers'];
+
+const typeLabels: Record<string, string> = {
+  vvimp: 'VVIMP', notes: 'Notes', imp_questions: 'IMP Questions', pyq: 'PYQ',
+  lab_manuals: 'Lab Manuals', model_answers: 'Model Answers', microproject: 'Microproject', capstone: 'Capstone',
+};
 
 export function ContentFormDialog({ open, onOpenChange, contentType, editingItem, onSuccess }: ContentFormDialogProps) {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -39,12 +47,14 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
 
   useEffect(() => {
     const fetchData = async () => {
-      const [deptRes, semRes] = await Promise.all([
+      const [deptRes, semRes, subRes] = await Promise.all([
         supabase.from('departments').select('id, name'),
-        supabase.from('semesters').select('id, name, department_id'),
+        supabase.from('semesters').select('id, name, number, department_id'),
+        supabase.from('subjects').select('id, name, code, department_id, semester_id, scheme'),
       ]);
       setDepartments(deptRes.data || []);
       setSemesters(semRes.data || []);
+      setSubjects(subRes.data || []);
     };
     fetchData();
   }, []);

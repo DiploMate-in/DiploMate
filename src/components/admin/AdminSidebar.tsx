@@ -10,7 +10,13 @@ import {
   MessageSquare, 
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Star,
+  HelpCircle,
+  History,
+  FlaskConical,
+  Award,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,9 +28,15 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+  { icon: Star, label: 'VVIMP', path: '/admin/content/vvimp' },
   { icon: FileText, label: 'Notes', path: '/admin/content/notes' },
-  { icon: FolderKanban, label: 'Microprojects', path: '/admin/content/microprojects' },
+  { icon: HelpCircle, label: 'IMP Questions', path: '/admin/content/imp_questions' },
+  { icon: History, label: 'PYQ', path: '/admin/content/pyq' },
+  { icon: FlaskConical, label: 'Lab Manuals', path: '/admin/content/lab_manuals' },
+  { icon: Award, label: 'Model Answers', path: '/admin/content/model_answers' },
+  { icon: FolderKanban, label: 'Microprojects', path: '/admin/content/microproject' },
   { icon: GraduationCap, label: 'Capstone', path: '/admin/content/capstone' },
+  { icon: BookOpen, label: 'Subjects', path: '/admin/subjects' },
   { icon: ShoppingCart, label: 'Orders', path: '/admin/orders' },
   { icon: Users, label: 'Users', path: '/admin/users' },
   { icon: Ticket, label: 'Coupons', path: '/admin/coupons' },
