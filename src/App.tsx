@@ -15,6 +15,8 @@ import { ContentDetail } from "@/pages/ContentDetail";
 import { Dashboard } from "@/pages/Dashboard";
 import { Wishlist } from "@/pages/Wishlist";
 import { Support } from "@/pages/Support";
+import { HowToBuy } from "@/pages/HowToBuy";
+import { PaymentHelp } from "@/pages/PaymentHelp";
 import { Login } from "@/pages/Login";
 import { Signup } from "@/pages/Signup";
 import { FAQsPage } from "@/pages/FAQsPage";
@@ -57,6 +59,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/how-to-buy" element={<HowToBuy />} />
+            <Route path="/payment-help" element={<PaymentHelp />} />
             <Route path="/faqs" element={<FAQsPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-conditions" element={<TermsConditionsPage />} />

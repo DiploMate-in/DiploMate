@@ -4,7 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { ModernNavbar } from '@/components/layout/ModernNavbar';
 import { FooterSection } from '@/components/home/FooterSection';
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton';
-import { Star, FileText, HelpCircle, History, FlaskConical, Award, ArrowRight, Cpu, Monitor, Cog, Building2 } from 'lucide-react';
+import { Star, FileText, HelpCircle, History, FlaskConical, Award, Cpu, Monitor, Cog, Building2, Code, Wrench } from 'lucide-react';
+import { DepartmentHeader } from '@/components/department/DepartmentHeader';
+import { MaterialCard } from '@/components/department/MaterialCard';
 
 interface Department {
   id: string;
@@ -20,50 +22,72 @@ const studyMaterials = [
     title: 'VVIMP', 
     description: 'Very Very Important questions and topics for exams',
     icon: Star,
-    color: 'bg-amber-100 text-amber-600'
+    iconColorClass: 'text-amber-500',
+    iconBgClass: 'bg-amber-50'
   },
   { 
     type: 'notes', 
     title: 'Notes', 
     description: 'Comprehensive chapter-wise study notes',
     icon: FileText,
-    color: 'bg-blue-100 text-blue-600'
+    iconColorClass: 'text-blue-500',
+    iconBgClass: 'bg-blue-50'
   },
   { 
     type: 'imp_questions', 
     title: 'IMP Questions', 
     description: 'Important questions frequently asked in exams',
     icon: HelpCircle,
-    color: 'bg-purple-100 text-purple-600'
+    iconColorClass: 'text-purple-500',
+    iconBgClass: 'bg-purple-50'
   },
   { 
     type: 'pyq', 
     title: 'PYQ', 
     description: 'Previous Year Questions with detailed solutions',
     icon: History,
-    color: 'bg-green-100 text-green-600'
+    iconColorClass: 'text-teal-500',
+    iconBgClass: 'bg-teal-50'
   },
   { 
     type: 'lab_manuals', 
     title: 'Lab Manuals', 
     description: 'Step-by-step practical experiments and observations',
     icon: FlaskConical,
-    color: 'bg-orange-100 text-orange-600'
+    iconColorClass: 'text-orange-500',
+    iconBgClass: 'bg-orange-50'
   },
   { 
     type: 'model_answers', 
     title: 'Model Answers', 
     description: 'High-scoring answer patterns and formats',
     icon: Award,
-    color: 'bg-pink-100 text-pink-600'
+    iconColorClass: 'text-pink-500',
+    iconBgClass: 'bg-pink-50'
   },
 ];
 
-const deptIcons: Record<string, React.ElementType> = {
-  aiml: Cpu,
-  co: Monitor,
-  mech: Cog,
-  civil: Building2,
+const deptConfig: Record<string, { icon: any, color: string, description: string }> = {
+  aiml: { 
+    icon: Cpu, 
+    color: '#2F6FED',
+    description: 'Complete resources for AI & Machine Learning diploma students'
+  },
+  co: { 
+    icon: Code, 
+    color: '#35C2A0', // Green
+    description: 'Complete resources for computer engineering diploma students'
+  },
+  mech: { 
+    icon: Wrench, 
+    color: '#FF6B6B', // Red/Pink
+    description: 'Engineering mechanics, designs, and manufacturing resources'
+  },
+  civil: { 
+    icon: Building2, 
+    color: '#FFA726', // Orange
+    description: 'Structural design, construction, and surveying materials'
+  },
 };
 
 export default function DepartmentStudyMaterials() {
@@ -75,6 +99,7 @@ export default function DepartmentStudyMaterials() {
     const fetchDepartment = async () => {
       if (!deptCode) return;
       
+      // Try to fetch from DB first
       const { data, error } = await supabase
         .from('departments')
         .select('*')
@@ -83,6 +108,19 @@ export default function DepartmentStudyMaterials() {
       
       if (!error && data) {
         setDepartment(data);
+      } else {
+        // Fallback for when DB might be empty or missing specific codes but we want to show the UI
+        // This is useful if the user hasn't populated the DB yet but wants the pages to work
+        const normalizedCode = deptCode.toLowerCase();
+        if (deptConfig[normalizedCode]) {
+           setDepartment({
+             id: normalizedCode,
+             name: getDepartmentName(normalizedCode),
+             code: deptCode.toUpperCase(),
+             color: deptConfig[normalizedCode].color,
+             icon: null
+           });
+        }
       }
       setLoading(false);
     };
@@ -90,7 +128,18 @@ export default function DepartmentStudyMaterials() {
     fetchDepartment();
   }, [deptCode]);
 
-  const DeptIcon = deptCode ? deptIcons[deptCode.toLowerCase()] || Cpu : Cpu;
+  const getDepartmentName = (code: string) => {
+    switch(code) {
+      case 'aiml': return 'AI & Machine Learning';
+      case 'co': return 'Computer Engineering';
+      case 'mech': return 'Mechanical Engineering';
+      case 'civil': return 'Civil Engineering';
+      default: return code.toUpperCase();
+    }
+  };
+
+  const normalizedCode = deptCode?.toLowerCase() || 'co';
+  const config = deptConfig[normalizedCode] || deptConfig['co'];
 
   if (loading) {
     return (
@@ -106,7 +155,8 @@ export default function DepartmentStudyMaterials() {
         <ModernNavbar />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold text-foreground">Department not found</h1>
-          <Link to="/" className="text-primary mt-4 inline-block">Go back home</Link>
+          <p className="text-muted-foreground mt-2">The department "{deptCode}" could not be found.</p>
+          <Link to="/" className="text-primary mt-4 inline-block hover:underline">Go back home</Link>
         </div>
       </div>
     );
@@ -116,50 +166,29 @@ export default function DepartmentStudyMaterials() {
     <div className="min-h-screen bg-background">
       <ModernNavbar />
       
-      {/* Hero Section */}
-      <div className="pt-20 md:pt-24 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground pb-12 md:pb-16">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-              <DeptIcon className="w-8 h-8" />
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-4xl font-bold">{department.name}</h1>
-              <p className="text-primary-foreground/80 mt-1">
-                Master {department.code} concepts with comprehensive notes and cutting-edge projects
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <DepartmentHeader 
+        title={department.name}
+        description={config.description}
+        icon={config.icon}
+        color={config.color}
+        className="pt-28 pb-20"
+      />
 
       {/* Study Materials Grid */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground">Study Materials</h2>
-          <p className="text-muted-foreground mt-2">Choose the type of study material you need</p>
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-foreground mb-3">Study Materials</h2>
+          <p className="text-muted-foreground">Choose the type of study material you need</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {studyMaterials.map((material) => {
-            const Icon = material.icon;
-            return (
-              <Link 
-                key={material.type}
-                to={`/department/${deptCode}/${material.type}`}
-                className="group bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/30"
-              >
-                <div className={`w-14 h-14 ${material.color} rounded-xl flex items-center justify-center mb-4`}>
-                  <Icon className="w-7 h-7" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{material.title}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{material.description}</p>
-                <div className="flex items-center text-primary font-medium text-sm group-hover:gap-2 transition-all">
-                  Explore <ArrowRight className="w-4 h-4 ml-1" />
-                </div>
-              </Link>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {studyMaterials.map((material) => (
+            <MaterialCard 
+              key={material.type}
+              {...material}
+              deptCode={deptCode || 'co'}
+            />
+          ))}
         </div>
       </div>
 

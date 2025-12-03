@@ -5,22 +5,14 @@ import { ModernNavbar } from '@/components/layout/ModernNavbar';
 import { FooterSection } from '@/components/home/FooterSection';
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Star, Sparkles, Target, FileText, Download } from 'lucide-react';
+import { ArrowLeft, Star, Sparkles, Target, BookOpen, ChevronRight, Eye, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface ContentItem {
+interface Subject {
   id: string;
-  title: string;
-  description: string | null;
-  price: number;
-  original_price: number | null;
-  file_format: string | null;
-  file_size: string | null;
-  rating: number | null;
-  preview_images: string[] | null;
-  tags: string[] | null;
-  subject_name: string | null;
-  subject_code: string | null;
+  name: string;
+  code: string;
+  scheme: string;
 }
 
 interface Department {
@@ -36,6 +28,20 @@ interface Semester {
   department_id: string;
 }
 
+interface ContentItem {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  original_price: number | null;
+  rating: number | null;
+  review_count: number | null;
+  preview_images: string[] | null;
+  tags: string[] | null;
+  file_format: string | null;
+  file_size: string | null;
+}
+
 const materialTitles: Record<string, { title: string; subtitle: string; icon: React.ElementType }> = {
   vvimp: { title: 'Very Very Important Questions', subtitle: 'Crucial topics and questions that frequently appear in exams', icon: Star },
   notes: { title: 'Study Notes', subtitle: 'Comprehensive chapter-wise study notes', icon: Sparkles },
@@ -49,7 +55,8 @@ export default function StudyMaterialPage() {
   const { deptCode, materialType } = useParams<{ deptCode: string; materialType: string }>();
   const [department, setDepartment] = useState<Department | null>(null);
   const [semesters, setSemesters] = useState<Semester[]>([]);
-  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [generalContent, setGeneralContent] = useState<ContentItem[]>([]);
   const [selectedScheme, setSelectedScheme] = useState<'K' | 'I'>('K');
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,14 +64,33 @@ export default function StudyMaterialPage() {
   const materialInfo = materialType ? materialTitles[materialType] : null;
   const Icon = materialInfo?.icon || Star;
 
+  // Fallback configuration for departments
+  const deptConfig: Record<string, { name: string }> = {
+    aiml: { name: 'AI & Machine Learning' },
+    co: { name: 'Computer Engineering' },
+    mech: { name: 'Mechanical Engineering' },
+    civil: { name: 'Civil Engineering' },
+  };
+
+  // Map URL codes to DB codes
+  const dbCodeMap: Record<string, string> = {
+    mech: 'me',
+    civil: 'ce',
+    aiml: 'aiml',
+    co: 'co'
+  };
+
   useEffect(() => {
     const fetchDepartment = async () => {
       if (!deptCode) return;
       
+      // Try to fetch from DB first using mapped code if available
+      const searchCode = dbCodeMap[deptCode.toLowerCase()] || deptCode;
+      
       const { data } = await supabase
         .from('departments')
         .select('*')
-        .ilike('code', deptCode)
+        .ilike('code', searchCode)
         .maybeSingle();
       
       if (data) {
@@ -79,7 +105,31 @@ export default function StudyMaterialPage() {
         
         if (semData && semData.length > 0) {
           setSemesters(semData);
-          setSelectedSemester(semData[0].id);
+          // Only set default semester if not already set (preserves selection on re-renders)
+          if (!selectedSemester) {
+            setSelectedSemester(semData[0].id);
+          }
+        }
+      } else {
+        // Fallback for missing DB entries
+        const normalizedCode = deptCode.toLowerCase();
+        if (deptConfig[normalizedCode]) {
+          const fallbackDept = {
+            id: normalizedCode, // Use code as ID for fallback
+            name: deptConfig[normalizedCode].name,
+            code: deptCode.toUpperCase()
+          };
+          setDepartment(fallbackDept);
+
+          // Generate default semesters for fallback
+          const defaultSemesters = Array.from({ length: 6 }, (_, i) => ({
+            id: `sem${i + 1}`,
+            name: `Semester ${i + 1}`,
+            number: i + 1,
+            department_id: normalizedCode
+          }));
+          setSemesters(defaultSemesters);
+          setSelectedSemester(defaultSemesters[0].id);
         }
       }
       setLoading(false);
@@ -89,26 +139,44 @@ export default function StudyMaterialPage() {
   }, [deptCode]);
 
   useEffect(() => {
-    const fetchContent = async () => {
-      if (!department || !selectedSemester || !materialType) return;
+    const fetchData = async () => {
+      if (!department || !selectedSemester) return;
 
-      const { data, error } = await supabase
-        .from('content_items')
-        .select('id, title, description, price, original_price, file_format, file_size, rating, preview_images, tags, subject_name, subject_code')
+      // Fetch subjects
+      const subjectsPromise = supabase
+        .from('subjects')
+        .select('id, name, code, scheme')
         .eq('department_id', department.id)
         .eq('semester_id', selectedSemester)
         .eq('scheme', selectedScheme)
-        .eq('type', materialType)
-        .eq('is_published', true);
+        .eq('is_active', true)
+        .order('code');
 
-      if (error) {
-        console.error('Error fetching content:', error);
-      }
+      // Fetch general content (not linked to a specific subject)
+      // Note: We don't filter by scheme for general content if it's null in DB, 
+      // but usually it should match. If scheme is null in DB, we might want to show it for both schemes.
+      // For now, we'll try to match scheme OR allow null scheme
+      const contentPromise = supabase
+        .from('content_items')
+        .select('*')
+        .eq('department_id', department.id)
+        .eq('semester_id', selectedSemester)
+        .eq('type', materialType)
+        .is('subject_id', null)
+        .eq('is_published', true)
+        .or(`scheme.eq.${selectedScheme},scheme.is.null`)
+        .order('created_at', { ascending: false });
+
+      const [subjectsRes, contentRes] = await Promise.all([subjectsPromise, contentPromise]);
+
+      if (subjectsRes.error) console.error('Error fetching subjects:', subjectsRes.error);
+      if (contentRes.error) console.error('Error fetching content:', contentRes.error);
       
-      setContentItems(data || []);
+      setSubjects(subjectsRes.data || []);
+      setGeneralContent(contentRes.data || []);
     };
 
-    fetchContent();
+    fetchData();
   }, [department, selectedSemester, selectedScheme, materialType]);
 
   const selectedSemesterData = semesters.find(s => s.id === selectedSemester);
@@ -160,13 +228,10 @@ export default function StudyMaterialPage() {
 
           <div className="flex flex-wrap gap-3 mt-6">
             <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-              <span className="w-2 h-2 bg-white rounded-full"></span> All Content
+              <span className="w-2 h-2 bg-white rounded-full"></span> All Subjects
             </span>
             <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-              <Target className="w-3 h-3" /> Exam Ready
-            </span>
-            <span className="bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> Updated Content
+              <Target className="w-3 h-3" /> Exam Focused
             </span>
           </div>
         </div>
@@ -225,103 +290,112 @@ export default function StudyMaterialPage() {
           </div>
         </div>
 
-        {/* Content Cards */}
+        {/* Subject Cards */}
         <h2 className="text-xl md:text-2xl font-bold text-foreground mb-6">
-          {materialInfo.title} for Semester {selectedSemesterData?.number || 1} ({selectedScheme} Scheme)
+          Subjects for Semester {selectedSemesterData?.number || 1} ({selectedScheme} Scheme)
         </h2>
 
-        {contentItems.length === 0 ? (
-          <div className="text-center py-12 bg-card border border-border rounded-xl">
-            <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No {materialInfo.title.toLowerCase()} available for this selection.</p>
-            <p className="text-sm text-muted-foreground mt-2">Check back later or try different filters.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {contentItems.map((item) => (
-              <div 
-                key={item.id}
-                className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
-              >
-                {/* Preview Image */}
-                {item.preview_images && item.preview_images.length > 0 ? (
-                  <div className="h-40 bg-muted overflow-hidden">
-                    <img 
-                      src={item.preview_images[0]} 
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-40 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                    <FileText className="w-16 h-16 text-primary/30" />
-                  </div>
-                )}
-
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <h3 className="text-lg font-semibold text-foreground line-clamp-2">{item.title}</h3>
-                    {item.subject_code && (
-                      <span className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs font-medium shrink-0">
-                        {item.subject_code}
-                      </span>
-                    )}
-                  </div>
+        {/* General Content Section */}
+        {generalContent.length > 0 && (
+          <div className="mb-12">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              General {materialInfo.title}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {generalContent.map((item) => (
+                <div 
+                  key={item.id}
+                  className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
+                >
+                  {item.preview_images && item.preview_images[0] && (
+                    <div className="aspect-video bg-muted relative overflow-hidden">
+                      <img 
+                        src={item.preview_images[0]} 
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
                   
-                  {item.description && (
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
-                  )}
+                  <div className="p-5">
+                    <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{item.title}</h3>
+                    
+                    {item.description && (
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
+                    )}
 
-                  {/* Tags */}
-                  {item.tags && item.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {item.tags.slice(0, 3).map((tag, idx) => (
-                        <span key={idx} className="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs">
-                          {tag}
-                        </span>
-                      ))}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        {item.rating && (
+                          <div className="flex items-center gap-1 text-amber-500">
+                            <Star className="w-4 h-4 fill-current" />
+                            <span className="text-sm font-medium">{item.rating}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-primary">₹{item.price}</span>
+                      </div>
                     </div>
-                  )}
 
-                  {/* Meta Info */}
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-                    {item.file_format && (
-                      <span className="flex items-center gap-1">
-                        <FileText className="w-3 h-3" />
-                        {item.file_format.toUpperCase()}
-                      </span>
-                    )}
-                    {item.file_size && (
-                      <span className="flex items-center gap-1">
-                        <Download className="w-3 h-3" />
-                        {item.file_size}
-                      </span>
-                    )}
-                    {item.rating && (
-                      <span className="flex items-center gap-1">
-                        <Star className="w-3 h-3 text-amber-500" />
-                        {item.rating}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Price & Action */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-bold text-foreground">₹{item.price}</span>
-                      {item.original_price && item.original_price > item.price && (
-                        <span className="text-sm text-muted-foreground line-through">₹{item.original_price}</span>
-                      )}
+                    <div className="flex gap-2">
+                      <Link to={`/content/${item.id}`} className="flex-1">
+                        <Button variant="outline" className="w-full" size="sm">
+                          <Eye className="w-4 h-4 mr-1" /> Preview
+                        </Button>
+                      </Link>
+                      <Button className="flex-1" size="sm">
+                        <Download className="w-4 h-4 mr-1" /> Buy
+                      </Button>
                     </div>
-                    <Link to={`/content/${item.id}`}>
-                      <Button size="sm">View Details</Button>
-                    </Link>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
+
+        {subjects.length === 0 && generalContent.length === 0 ? (
+          <div className="text-center py-12 bg-card border border-border rounded-xl">
+            <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No subjects or content found for this selection.</p>
+            <p className="text-sm text-muted-foreground mt-2">Please try different filters or check back later.</p>
+          </div>
+        ) : subjects.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {subjects.map((subject) => (
+              <Link 
+                key={subject.id}
+                to={`/department/${deptCode}/${materialType}/${subject.id}`}
+                className="group block bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                      <BookOpen className="w-6 h-6" />
+                    </div>
+                    <span className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs font-medium font-mono">
+                      {subject.code}
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {subject.name}
+                  </h3>
+                  
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Access all {materialInfo.title.toLowerCase()} for {subject.name}.
+                  </p>
+
+                  <div className="flex items-center text-sm font-medium text-primary">
+                    View Materials <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <FooterSection />

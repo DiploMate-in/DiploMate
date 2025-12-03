@@ -13,6 +13,16 @@ export type Semester = {
   name: string;
 };
 
+export type Subject = {
+  id: string;
+  name: string;
+  code: string;
+  departmentId: string;
+  semesterId: string;
+  scheme: 'K' | 'I';
+  isActive: boolean;
+};
+
 export type ContentType = 'notes' | 'microproject' | 'capstone';
 
 export type ContentItem = {

@@ -16,8 +16,8 @@ export function ModernNavbar() {
 
   const departments = [
     { id: 'aiml', name: 'AIML', icon: Brain, color: '#2F6FED' },
-    { id: 'computer', name: 'Computer', icon: Monitor, color: '#35C2A0' },
-    { id: 'mechanical', name: 'Mechanical', icon: Cog, color: '#FF6B6B' },
+    { id: 'co', name: 'Computer', icon: Monitor, color: '#35C2A0' },
+    { id: 'mech', name: 'Mechanical', icon: Cog, color: '#FF6B6B' },
     { id: 'civil', name: 'Civil', icon: Building2, color: '#FFA726' }
   ];
 
@@ -35,12 +35,11 @@ export function ModernNavbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between relative">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group" onClick={closeMobileMenu}>
-          <div 
-            className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center gradient-primary transition-transform duration-200 group-hover:scale-105"
-            style={{ boxShadow: '0 4px 12px rgba(47, 111, 237, 0.25)' }}
-          >
-            <span className="text-white font-bold text-lg md:text-xl">D</span>
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="DiploMate Logo" 
+            className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-contain transition-transform duration-200 group-hover:scale-105"
+          />
           <div style={{ fontFamily: 'Inter, sans-serif' }}>
             <span className="text-lg md:text-xl font-bold" style={{ color: '#2F6FED' }}>Diplo</span>
             <span className="text-lg md:text-xl font-bold" style={{ color: '#35C2A0' }}>Mate</span>

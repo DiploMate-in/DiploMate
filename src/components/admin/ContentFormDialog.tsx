@@ -122,6 +122,7 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
     if (!form.title.trim()) return false;
     if (!form.department_id) return false;
     if (!form.semester_id) return false;
+    // Scheme is required for all study materials
     if (isStudyMaterial && !form.scheme) return false;
     return true;
   };

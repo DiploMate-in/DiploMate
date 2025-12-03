@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
 import { ContentFormDialog } from '@/components/admin/ContentFormDialog';
+import { ResourceTable } from '@/components/admin/ResourceTable';
 
 interface ContentItem {
   id: string;
@@ -26,9 +26,20 @@ interface Department {
   name: string;
 }
 
+const typeLabels: Record<string, string> = {
+  vvimp: 'VVIMP',
+  notes: 'Notes',
+  imp_questions: 'IMP Questions',
+  pyq: 'PYQ',
+  lab_manuals: 'Lab Manuals',
+  model_answers: 'Model Answers',
+  microproject: 'Microprojects',
+  capstone: 'Capstone Projects',
+  custom_build: 'Custom Build Requests'
+};
+
 export function AdminContent() {
   const { type } = useParams<{ type: string }>();
-  const navigate = useNavigate();
   const [content, setContent] = useState<ContentItem[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,12 +49,13 @@ export function AdminContent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ContentItem | null>(null);
 
-  const contentType = type === 'microprojects' ? 'microproject' : type === 'capstone' ? 'capstone' : 'notes';
-  const pageTitle = type === 'microprojects' ? 'Microprojects' : type === 'capstone' ? 'Capstone Projects' : 'Notes';
+  // Normalize type from URL to database type
+  const contentType = type === 'microprojects' ? 'microproject' : (type || 'notes');
+  const pageTitle = typeLabels[contentType] || 'Content';
 
   useEffect(() => {
     fetchData();
-  }, [type]);
+  }, [contentType]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -64,7 +76,7 @@ export function AdminContent() {
       setContent(contentRes.data as any || []);
       setDepartments(deptRes.data || []);
     } catch (error) {
-      console.error('Error fetching content:', error);
+      toast.error('Failed to fetch content');
     } finally {
       setLoading(false);
     }
@@ -141,62 +153,12 @@ export function AdminContent() {
       {/* Table */}
       <Card className="border-0 shadow-sm">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50 border-b">
-                <tr>
-                  <th className="text-left p-4 font-medium text-slate-600">Title</th>
-                  <th className="text-left p-4 font-medium text-slate-600">Department</th>
-                  <th className="text-left p-4 font-medium text-slate-600">Semester</th>
-                  <th className="text-left p-4 font-medium text-slate-600">Price</th>
-                  <th className="text-left p-4 font-medium text-slate-600">Status</th>
-                  <th className="text-left p-4 font-medium text-slate-600">Created</th>
-                  <th className="text-right p-4 font-medium text-slate-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={7} className="p-8 text-center text-slate-500">Loading...</td></tr>
-                ) : filteredContent.length === 0 ? (
-                  <tr><td colSpan={7} className="p-8 text-center text-slate-500">No content found</td></tr>
-                ) : (
-                  filteredContent.map((item) => (
-                    <tr key={item.id} className="border-b hover:bg-slate-50">
-                      <td className="p-4 font-medium text-slate-900">{item.title}</td>
-                      <td className="p-4 text-slate-600">{item.departments?.name || '-'}</td>
-                      <td className="p-4 text-slate-600">{item.semesters?.name || '-'}</td>
-                      <td className="p-4 text-slate-600">₹{item.price}</td>
-                      <td className="p-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          item.is_published ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
-                        }`}>
-                          {item.is_published ? 'Published' : 'Draft'}
-                        </span>
-                      </td>
-                      <td className="p-4 text-slate-600">{format(new Date(item.created_at), 'MMM d, yyyy')}</td>
-                      <td className="p-4 text-right">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => { setEditingItem(item); setDialogOpen(true); }}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-red-600"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <ResourceTable 
+            data={filteredContent}
+            loading={loading}
+            onEdit={(item) => { setEditingItem(item); setDialogOpen(true); }}
+            onDelete={handleDelete}
+          />
         </CardContent>
       </Card>
 

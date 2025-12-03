@@ -205,10 +205,26 @@ export default function ProjectsPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="text-center py-12 bg-card border border-border rounded-xl">
-            <FolderKanban className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No projects found.</p>
-            <p className="text-sm text-muted-foreground mt-2">Check back later for new projects.</p>
+          <div className="text-center py-16 bg-card border border-border rounded-xl">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <FolderKanban className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No projects found</h3>
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              We couldn't find any {typeInfo?.title.toLowerCase()} matching your criteria. 
+              Try adjusting your filters or request a custom build.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button variant="outline" onClick={() => { setSearch(''); setFilterDept('all'); }}>
+                Clear Filters
+              </Button>
+              <Link to="/custom-build">
+                <Button className="gap-2">
+                  <Wrench className="w-4 h-4" />
+                  Request Custom Build
+                </Button>
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
