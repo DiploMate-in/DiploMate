@@ -20,7 +20,8 @@ export const contentItems: ContentItem[] = [
   {
     id: '1',
     title: 'Complete Machine Learning Notes',
-    description: 'Comprehensive notes covering all ML algorithms, neural networks, and practical implementations with Python examples.',
+    description:
+      'Comprehensive notes covering all ML algorithms, neural networks, and practical implementations with Python examples.',
     type: 'notes',
     departmentId: 'aiml',
     semesterId: 'sem5',
@@ -42,15 +43,14 @@ export const contentItems: ContentItem[] = [
   {
     id: '2',
     title: 'Data Structures & Algorithms Notes',
-    description: 'Complete DSA notes with code examples in C++ and Java. Covers arrays, linked lists, trees, graphs, and sorting algorithms.',
+    description:
+      'Complete DSA notes with code examples in C++ and Java. Covers arrays, linked lists, trees, graphs, and sorting algorithms.',
     type: 'notes',
     departmentId: 'co',
     semesterId: 'sem3',
     price: 99,
     originalPrice: 199,
-    previewImages: [
-      'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800',
-    ],
+    previewImages: ['https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800'],
     tags: ['DSA', 'C++', 'Algorithms'],
     downloadsAllowed: 3,
     fileSize: '32 MB',
@@ -63,14 +63,13 @@ export const contentItems: ContentItem[] = [
   {
     id: '3',
     title: 'Smart Attendance System Using Face Recognition',
-    description: 'Complete microproject with source code, documentation, and presentation. Uses OpenCV and Python.',
+    description:
+      'Complete microproject with source code, documentation, and presentation. Uses OpenCV and Python.',
     type: 'microproject',
     departmentId: 'aiml',
     semesterId: 'sem4',
     price: 199,
-    previewImages: [
-      'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800',
-    ],
+    previewImages: ['https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800'],
     tags: ['OpenCV', 'Python', 'Face Recognition'],
     downloadsAllowed: 3,
     fileSize: '120 MB',
@@ -82,15 +81,14 @@ export const contentItems: ContentItem[] = [
   {
     id: '4',
     title: 'IoT Based Home Automation System',
-    description: 'Complete capstone project with hardware schematics, Arduino code, mobile app, and full documentation.',
+    description:
+      'Complete capstone project with hardware schematics, Arduino code, mobile app, and full documentation.',
     type: 'capstone',
     departmentId: 'co',
     semesterId: 'sem6',
     price: 499,
     originalPrice: 799,
-    previewImages: [
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
-    ],
+    previewImages: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800'],
     tags: ['IoT', 'Arduino', 'Mobile App'],
     downloadsAllowed: 5,
     fileSize: '250 MB',
@@ -103,14 +101,13 @@ export const contentItems: ContentItem[] = [
   {
     id: '5',
     title: 'Thermodynamics Complete Notes',
-    description: 'Detailed notes on all thermodynamics concepts with solved numericals and diagrams.',
+    description:
+      'Detailed notes on all thermodynamics concepts with solved numericals and diagrams.',
     type: 'notes',
     departmentId: 'mech',
     semesterId: 'sem3',
     price: 129,
-    previewImages: [
-      'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800',
-    ],
+    previewImages: ['https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800'],
     tags: ['Thermodynamics', 'Heat Transfer', 'Numericals'],
     downloadsAllowed: 3,
     fileSize: '38 MB',
@@ -122,14 +119,13 @@ export const contentItems: ContentItem[] = [
   {
     id: '6',
     title: 'Structural Analysis Notes',
-    description: 'Complete structural analysis notes covering beams, trusses, and frame analysis with examples.',
+    description:
+      'Complete structural analysis notes covering beams, trusses, and frame analysis with examples.',
     type: 'notes',
     departmentId: 'civil',
     semesterId: 'sem4',
     price: 119,
-    previewImages: [
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800',
-    ],
+    previewImages: ['https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800'],
     tags: ['Structures', 'Analysis', 'Design'],
     downloadsAllowed: 3,
     fileSize: '42 MB',
@@ -141,14 +137,13 @@ export const contentItems: ContentItem[] = [
   {
     id: '7',
     title: 'Weather Prediction Using ML',
-    description: 'Microproject using machine learning to predict weather patterns. Includes dataset and trained models.',
+    description:
+      'Microproject using machine learning to predict weather patterns. Includes dataset and trained models.',
     type: 'microproject',
     departmentId: 'aiml',
     semesterId: 'sem5',
     price: 249,
-    previewImages: [
-      'https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800',
-    ],
+    previewImages: ['https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800'],
     tags: ['ML', 'Weather', 'Prediction'],
     downloadsAllowed: 3,
     fileSize: '180 MB',
@@ -160,14 +155,13 @@ export const contentItems: ContentItem[] = [
   {
     id: '8',
     title: 'E-Commerce Website with Admin Panel',
-    description: 'Full-stack capstone project with React frontend, Node.js backend, and complete documentation.',
+    description:
+      'Full-stack capstone project with React frontend, Node.js backend, and complete documentation.',
     type: 'capstone',
     departmentId: 'co',
     semesterId: 'sem6',
     price: 599,
-    previewImages: [
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
-    ],
+    previewImages: ['https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800'],
     tags: ['React', 'Node.js', 'MongoDB'],
     downloadsAllowed: 5,
     fileSize: '320 MB',

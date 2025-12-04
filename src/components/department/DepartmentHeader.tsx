@@ -9,12 +9,12 @@ interface DepartmentHeaderProps {
   className?: string;
 }
 
-export function DepartmentHeader({ 
-  title, 
-  description, 
-  icon: Icon, 
+export function DepartmentHeader({
+  title,
+  description,
+  icon: Icon,
   color,
-  className 
+  className,
 }: DepartmentHeaderProps) {
   // Determine if color is a hex code or tailwind class
   const isHex = color.startsWith('#');
@@ -22,11 +22,11 @@ export function DepartmentHeader({
   const bgClass = !isHex ? color : '';
 
   return (
-    <div 
+    <div
       className={cn(
-        "w-full py-16 md:py-24 text-white transition-colors duration-500", 
+        'w-full py-16 md:py-24 text-white transition-colors duration-500',
         bgClass,
-        className
+        className,
       )}
       style={style}
     >
@@ -37,9 +37,7 @@ export function DepartmentHeader({
           </div>
           <div>
             <h1 className="text-3xl md:text-5xl font-bold mb-2">{title}</h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl">
-              {description}
-            </p>
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl">{description}</p>
           </div>
         </div>
       </div>

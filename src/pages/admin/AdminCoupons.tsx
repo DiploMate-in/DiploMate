@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -152,28 +158,49 @@ export function AdminCoupons() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={6} className="p-8 text-center text-slate-500">Loading...</td></tr>
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-500">
+                      Loading...
+                    </td>
+                  </tr>
                 ) : coupons.length === 0 ? (
-                  <tr><td colSpan={6} className="p-8 text-center text-slate-500">No coupons yet</td></tr>
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-500">
+                      No coupons yet
+                    </td>
+                  </tr>
                 ) : (
                   coupons.map((c) => (
                     <tr key={c.id} className="border-b hover:bg-slate-50">
                       <td className="p-4 font-mono font-medium text-slate-900">{c.code}</td>
                       <td className="p-4 text-slate-600">
-                        {c.discount_type === 'percentage' ? `${c.discount_value}%` : `₹${c.discount_value}`}
+                        {c.discount_type === 'percentage'
+                          ? `${c.discount_value}%`
+                          : `₹${c.discount_value}`}
                       </td>
-                      <td className="p-4 text-slate-600">{c.used_count} / {c.max_uses}</td>
+                      <td className="p-4 text-slate-600">
+                        {c.used_count} / {c.max_uses}
+                      </td>
                       <td className="p-4 text-slate-600 text-sm">
-                        {format(new Date(c.valid_from), 'MMM d')} - {format(new Date(c.valid_to), 'MMM d, yyyy')}
+                        {format(new Date(c.valid_from), 'MMM d')} -{' '}
+                        {format(new Date(c.valid_to), 'MMM d, yyyy')}
                       </td>
                       <td className="p-4">
-                        <Switch checked={c.is_active} onCheckedChange={(v) => toggleActive(c.id, v)} />
+                        <Switch
+                          checked={c.is_active}
+                          onCheckedChange={(v) => toggleActive(c.id, v)}
+                        />
                       </td>
                       <td className="p-4 text-right">
                         <Button variant="ghost" size="sm" onClick={() => openDialog(c)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-red-600" onClick={() => handleDelete(c.id)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600"
+                          onClick={() => handleDelete(c.id)}
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </td>
@@ -204,7 +231,10 @@ export function AdminCoupons() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Discount Type</Label>
-                <Select value={form.discount_type} onValueChange={(v) => setForm({ ...form, discount_type: v })}>
+                <Select
+                  value={form.discount_type}
+                  onValueChange={(v) => setForm({ ...form, discount_type: v })}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -254,11 +284,16 @@ export function AdminCoupons() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Switch checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />
+              <Switch
+                checked={form.is_active}
+                onCheckedChange={(v) => setForm({ ...form, is_active: v })}
+              />
               <Label>Active</Label>
             </div>
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                Cancel
+              </Button>
               <Button type="submit">Save</Button>
             </div>
           </form>

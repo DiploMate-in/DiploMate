@@ -5,7 +5,16 @@ import { ModernNavbar } from '@/components/layout/ModernNavbar';
 import { FooterSection } from '@/components/home/FooterSection';
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Star, Sparkles, Target, BookOpen, ChevronRight, Eye, Download } from 'lucide-react';
+import {
+  ArrowLeft,
+  Star,
+  Sparkles,
+  Target,
+  BookOpen,
+  ChevronRight,
+  Eye,
+  Download,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Subject {
@@ -44,14 +53,39 @@ interface ContentItem {
   file_size: string | null;
 }
 
-const materialTitles: Record<string, { title: string; subtitle: string; icon: React.ElementType }> = {
-  vvimp: { title: 'Very Very Important Questions', subtitle: 'Crucial topics and questions that frequently appear in exams', icon: Star },
-  notes: { title: 'Study Notes', subtitle: 'Comprehensive chapter-wise study notes', icon: Sparkles },
-  imp_questions: { title: 'Important Questions', subtitle: 'Important questions frequently asked in exams', icon: Target },
-  pyq: { title: 'Previous Year Questions', subtitle: 'Past exam papers with detailed solutions', icon: Star },
-  lab_manuals: { title: 'Lab Manuals', subtitle: 'Step-by-step practical experiments and observations', icon: Sparkles },
-  model_answers: { title: 'Model Answers', subtitle: 'High-scoring answer patterns and formats', icon: Target },
-};
+const materialTitles: Record<string, { title: string; subtitle: string; icon: React.ElementType }> =
+  {
+    vvimp: {
+      title: 'Very Very Important Questions',
+      subtitle: 'Crucial topics and questions that frequently appear in exams',
+      icon: Star,
+    },
+    notes: {
+      title: 'Study Notes',
+      subtitle: 'Comprehensive chapter-wise study notes',
+      icon: Sparkles,
+    },
+    imp_questions: {
+      title: 'Important Questions',
+      subtitle: 'Important questions frequently asked in exams',
+      icon: Target,
+    },
+    pyq: {
+      title: 'Previous Year Questions',
+      subtitle: 'Past exam papers with detailed solutions',
+      icon: Star,
+    },
+    lab_manuals: {
+      title: 'Lab Manuals',
+      subtitle: 'Step-by-step practical experiments and observations',
+      icon: Sparkles,
+    },
+    model_answers: {
+      title: 'Model Answers',
+      subtitle: 'High-scoring answer patterns and formats',
+      icon: Target,
+    },
+  };
 
 export default function StudyMaterialPage() {
   const { deptCode, materialType } = useParams<{ deptCode: string; materialType: string }>();
@@ -79,32 +113,32 @@ export default function StudyMaterialPage() {
     mech: 'me',
     civil: 'ce',
     aiml: 'aiml',
-    co: 'co'
+    co: 'co',
   };
 
   useEffect(() => {
     const fetchDepartment = async () => {
       if (!deptCode) return;
-      
+
       // Try to fetch from DB first using mapped code if available
       const searchCode = dbCodeMap[deptCode.toLowerCase()] || deptCode;
-      
+
       const { data } = await supabase
         .from('departments')
         .select('*')
         .ilike('code', searchCode)
         .maybeSingle();
-      
+
       if (data) {
         setDepartment(data);
-        
+
         // Fetch semesters for this department
         const { data: semData } = await supabase
           .from('semesters')
           .select('*')
           .eq('department_id', data.id)
           .order('number');
-        
+
         if (semData && semData.length > 0) {
           setSemesters(semData);
           // Only set default semester if not already set (preserves selection on re-renders)
@@ -119,7 +153,7 @@ export default function StudyMaterialPage() {
           const fallbackDept = {
             id: normalizedCode, // Use code as ID for fallback
             name: deptConfig[normalizedCode].name,
-            code: deptCode.toUpperCase()
+            code: deptCode.toUpperCase(),
           };
           setDepartment(fallbackDept);
 
@@ -128,7 +162,7 @@ export default function StudyMaterialPage() {
             id: `sem${i + 1}`,
             name: `Semester ${i + 1}`,
             number: i + 1,
-            department_id: normalizedCode
+            department_id: normalizedCode,
           }));
           setSemesters(defaultSemesters);
           setSelectedSemester(defaultSemesters[0].id);
@@ -155,7 +189,7 @@ export default function StudyMaterialPage() {
         .order('code');
 
       // Fetch general content (not linked to a specific subject)
-      // Note: We don't filter by scheme for general content if it's null in DB, 
+      // Note: We don't filter by scheme for general content if it's null in DB,
       // but usually it should match. If scheme is null in DB, we might want to show it for both schemes.
       // For now, we'll try to match scheme OR allow null scheme
       const contentPromise = supabase
@@ -173,7 +207,7 @@ export default function StudyMaterialPage() {
 
       if (subjectsRes.error) console.error('Error fetching subjects:', subjectsRes.error);
       if (contentRes.error) console.error('Error fetching content:', contentRes.error);
-      
+
       setSubjects(subjectsRes.data || []);
       setGeneralContent(contentRes.data || []);
     };
@@ -181,7 +215,7 @@ export default function StudyMaterialPage() {
     fetchData();
   }, [department, selectedSemester, selectedScheme, materialType]);
 
-  const selectedSemesterData = semesters.find(s => s.id === selectedSemester);
+  const selectedSemesterData = semesters.find((s) => s.id === selectedSemester);
 
   if (loading) {
     return (
@@ -197,7 +231,9 @@ export default function StudyMaterialPage() {
         <ModernNavbar />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold text-foreground">Page not found</h1>
-          <Link to="/" className="text-primary mt-4 inline-block">Go back home</Link>
+          <Link to="/" className="text-primary mt-4 inline-block">
+            Go back home
+          </Link>
         </div>
       </div>
     );
@@ -206,18 +242,18 @@ export default function StudyMaterialPage() {
   return (
     <div className="min-h-screen bg-background">
       <ModernNavbar />
-      
+
       {/* Hero Section */}
       <div className="pt-20 md:pt-24 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground pb-10 md:pb-14">
         <div className="container mx-auto px-4">
-          <Link 
+          <Link
             to={`/department/${deptCode}`}
             className="inline-flex items-center gap-2 text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to {department.name}
           </Link>
-          
+
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-amber-400 rounded-2xl flex items-center justify-center">
               <Icon className="w-8 h-8 text-amber-900" />
@@ -245,14 +281,16 @@ export default function StudyMaterialPage() {
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             {/* Scheme Selector */}
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-3">Select Scheme</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-3">
+                Select Scheme
+              </label>
               <div className="flex gap-2">
                 <Button
                   variant={selectedScheme === 'K' ? 'default' : 'outline'}
                   onClick={() => setSelectedScheme('K')}
                   className={cn(
-                    "px-6",
-                    selectedScheme === 'K' && "bg-primary text-primary-foreground"
+                    'px-6',
+                    selectedScheme === 'K' && 'bg-primary text-primary-foreground',
                   )}
                 >
                   K Scheme
@@ -261,8 +299,8 @@ export default function StudyMaterialPage() {
                   variant={selectedScheme === 'I' ? 'default' : 'outline'}
                   onClick={() => setSelectedScheme('I')}
                   className={cn(
-                    "px-6",
-                    selectedScheme === 'I' && "bg-primary text-primary-foreground"
+                    'px-6',
+                    selectedScheme === 'I' && 'bg-primary text-primary-foreground',
                   )}
                 >
                   I Scheme
@@ -272,7 +310,9 @@ export default function StudyMaterialPage() {
 
             {/* Semester Selector */}
             <div className="flex-1">
-              <label className="block text-sm font-medium text-muted-foreground mb-3">Select Semester</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-3">
+                Select Semester
+              </label>
               <div className="flex flex-wrap gap-2">
                 {semesters.map((sem) => (
                   <Button
@@ -280,8 +320,8 @@ export default function StudyMaterialPage() {
                     variant={selectedSemester === sem.id ? 'default' : 'outline'}
                     onClick={() => setSelectedSemester(sem.id)}
                     className={cn(
-                      "px-4",
-                      selectedSemester === sem.id && "bg-primary text-primary-foreground"
+                      'px-4',
+                      selectedSemester === sem.id && 'bg-primary text-primary-foreground',
                     )}
                   >
                     Sem {sem.number}
@@ -306,25 +346,29 @@ export default function StudyMaterialPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {generalContent.map((item) => (
-                <div 
+                <div
                   key={item.id}
                   className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
                 >
                   {item.preview_images && item.preview_images[0] && (
                     <div className="aspect-video bg-muted relative overflow-hidden">
-                      <img 
-                        src={item.preview_images[0]} 
+                      <img
+                        src={item.preview_images[0]}
                         alt={item.title}
                         className="w-full h-full object-cover"
                       />
                     </div>
                   )}
-                  
+
                   <div className="p-5">
-                    <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{item.title}</h3>
-                    
+                    <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
+                      {item.title}
+                    </h3>
+
                     {item.description && (
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {item.description}
+                      </p>
                     )}
 
                     <div className="flex items-center justify-between mb-4">
@@ -361,66 +405,82 @@ export default function StudyMaterialPage() {
         {subjects.length === 0 && generalContent.length === 0 ? (
           <div className="text-center py-12 bg-card border border-border rounded-xl">
             <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No subjects or content found for this selection.</p>
-            <p className="text-sm text-muted-foreground mt-2">Please try different filters or check back later.</p>
+            <p className="text-muted-foreground">
+              No subjects or content found for this selection.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Please try different filters or check back later.
+            </p>
           </div>
         ) : subjects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {subjects.map((subject) => {
-              const totalValue = subject.content_items?.reduce((sum, item) => sum + (item.price || 0), 0) || 0;
+              const totalValue =
+                subject.content_items?.reduce((sum, item) => sum + (item.price || 0), 0) || 0;
               const bundlePrice = subject.bundle_price;
-              const hasBundle = bundlePrice !== undefined && bundlePrice !== null && bundlePrice < totalValue;
+              const hasBundle =
+                bundlePrice !== undefined && bundlePrice !== null && bundlePrice < totalValue;
 
               return (
-              <Link 
-                key={subject.id}
-                to={`/department/${deptCode}/${materialType}/${subject.id}`}
-                className="group block bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                      <BookOpen className="w-6 h-6" />
-                    </div>
-                    <span className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs font-medium font-mono">
-                      {subject.code}
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {subject.name}
-                  </h3>
-                  
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Access all {materialInfo.title.toLowerCase()} for {subject.name}.
-                  </p>
-
-                  {hasBundle && (
-                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-900/50">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-muted-foreground">Total Value</span>
-                        <span className="text-xs font-medium line-through text-muted-foreground">₹{totalValue}</span>
+                <Link
+                  key={subject.id}
+                  to={`/department/${deptCode}/${materialType}/${subject.id}`}
+                  className="group block bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        <BookOpen className="w-6 h-6" />
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-bold text-green-700 dark:text-green-400">Bundle Price</span>
-                        <span className="text-sm font-bold text-green-700 dark:text-green-400">₹{bundlePrice}</span>
-                      </div>
+                      <span className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs font-medium font-mono">
+                        {subject.code}
+                      </span>
                     </div>
-                  )}
 
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center text-sm font-medium text-primary">
-                      View Materials <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                    </div>
+                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {subject.name}
+                    </h3>
+
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Access all {materialInfo.title.toLowerCase()} for {subject.name}.
+                    </p>
+
                     {hasBundle && (
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-8">
-                        Buy Bundle
-                      </Button>
+                      <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-900/50">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs text-muted-foreground">Total Value</span>
+                          <span className="text-xs font-medium line-through text-muted-foreground">
+                            ₹{totalValue}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-bold text-green-700 dark:text-green-400">
+                            Bundle Price
+                          </span>
+                          <span className="text-sm font-bold text-green-700 dark:text-green-400">
+                            ₹{bundlePrice}
+                          </span>
+                        </div>
+                      </div>
                     )}
+
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center text-sm font-medium text-primary">
+                        View Materials{' '}
+                        <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                      {hasBundle && (
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white h-8"
+                        >
+                          Buy Bundle
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Link>
-            );
+                </Link>
+              );
             })}
           </div>
         ) : null}

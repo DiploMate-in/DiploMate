@@ -1,73 +1,109 @@
-# Welcome to your Lovable project
+# DiploMate
 
-## Project info
+DiploMate is a comprehensive platform for diploma students to access study materials, notes, microprojects, and capstone projects. It features a secure content delivery system, user authentication, wishlist management, and an admin dashboard for content management.
 
-**URL**: https://lovable.dev/projects/25dde4b9-664a-43d6-9c89-c5c8fc8cca61
+## Features
 
-## How can I edit this code?
+-   **Study Materials:** Access notes, question papers, and syllabus for various departments.
+-   **Projects:** Browse and purchase microprojects and capstone projects.
+-   **Secure Viewer:** PDF viewer with canvas rendering and drifting watermarks to prevent unauthorized distribution.
+-   **User Accounts:** Sign up, login, manage wishlist, and view purchase history.
+-   **Admin Dashboard:** Manage content, subjects, orders, users, coupons, and settings.
+-   **Responsive Design:** Optimized for both desktop and mobile devices.
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+-   **Frontend:** React, TypeScript, Vite
+-   **Styling:** Tailwind CSS, Shadcn UI
+-   **State Management:** React Context, TanStack Query
+-   **Backend/Database:** Supabase (PostgreSQL, Auth, Storage)
+-   **Routing:** React Router DOM
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/25dde4b9-664a-43d6-9c89-c5c8fc8cca61) and start prompting.
+## Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+-   Node.js (v18 or higher)
+-   npm (v9 or higher)
+-   A Supabase project
 
-**Use your preferred IDE**
+## Setup
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1.  **Clone the repository:**
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+    ```bash
+    git clone <repository-url>
+    cd DiploMate
+    ```
 
-Follow these steps:
+2.  **Install dependencies:**
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+    ```bash
+    npm install
+    ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3.  **Environment Variables:**
 
-# Step 3: Install the necessary dependencies.
-npm i
+    Create a `.env` file in the root directory and add your Supabase credentials:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+    ```env
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+    ```
+
+4.  **Database Setup:**
+
+    Run the SQL migrations located in `supabase/migrations` in your Supabase project's SQL editor to set up the schema and RLS policies.
+
+## Development
+
+To start the development server:
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Scripts
 
-**Use GitHub Codespaces**
+-   `npm run dev`: Start the development server.
+-   `npm run build`: Build the application for production.
+-   `npm run preview`: Preview the production build locally.
+-   `npm run lint`: Run ESLint to check for code quality issues.
+-   `npm run lint:fix`: Automatically fix linting issues.
+-   `npm run format`: Format the code using Prettier.
+-   `npm run typecheck`: Run TypeScript type checking.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Architecture
 
-## What technologies are used for this project?
+### Routing
 
-This project is built with:
+The application uses `react-router-dom` for client-side routing. Routes are defined in `src/routing/routes.tsx`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+-   **Public Routes:** Accessible to everyone (Home, Notes, Projects, etc.).
+-   **Protected Routes:** Require user authentication (Dashboard, Wishlist). Wrapped in `<RequireAuth />`.
+-   **Admin Routes:** Require admin role (Admin Dashboard, Content Management). Wrapped in `<RequireAdmin />`.
 
-## How can I deploy this project?
+### Authentication & Authorization
 
-Simply open [Lovable](https://lovable.dev/projects/25dde4b9-664a-43d6-9c89-c5c8fc8cca61) and click on Share -> Publish.
+Authentication is handled by Supabase Auth. The `AppContext` manages the user session and global state.
 
-## Can I connect a custom domain to my Lovable project?
+-   **Role-Based Access Control (RBAC):**
+    -   User roles are stored in the `user_roles` table.
+    -   The `hasRole` service (`src/services/roles.ts`) checks permissions using a Supabase RPC function or direct query.
+    -   RLS policies in the database enforce data access security at the row level.
 
-Yes, you can!
+## Deployment
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1.  **Build the project:**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+    ```bash
+    npm run build
+    ```
+
+2.  **Deploy:**
+
+    Upload the `dist` folder to your hosting provider (e.g., Vercel, Netlify, GitHub Pages).
+
+3.  **Custom Domain:**
+
+    Configure your hosting provider's settings to point your custom domain to the deployed application. Ensure your Supabase project's "Site URL" and "Redirect URLs" are updated to match your production domain.

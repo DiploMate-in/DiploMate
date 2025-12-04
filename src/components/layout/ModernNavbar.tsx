@@ -1,17 +1,37 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, ChevronRight, BookOpen, Code, Wrench, Building2, Lightbulb, Trophy, Zap, User, HelpCircle, MessageCircle, Brain, Monitor, Cog, LogOut, Home } from 'lucide-react';
+import {
+  Menu,
+  X,
+  ChevronDown,
+  ChevronRight,
+  BookOpen,
+  Code,
+  Wrench,
+  Building2,
+  Lightbulb,
+  Trophy,
+  Zap,
+  User,
+  HelpCircle,
+  MessageCircle,
+  Brain,
+  Monitor,
+  Cog,
+  LogOut,
+  Home,
+} from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 
 export function ModernNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProjectsDropdownOpen, setIsProjectsDropdownOpen] = useState(false);
   const [isDepartmentsDropdownOpen, setIsDepartmentsDropdownOpen] = useState(false);
-  
+
   // Mobile Dropdown States
   const [mobileProjectsExpanded, setMobileProjectsExpanded] = useState(false);
   const [mobileDepartmentsExpanded, setMobileDepartmentsExpanded] = useState(false);
-  
+
   const location = useLocation();
   const { isAuthenticated, logout, user } = useApp();
 
@@ -19,7 +39,7 @@ export function ModernNavbar() {
     { id: 'aiml', name: 'AIML', icon: Brain, color: '#2F6FED' },
     { id: 'co', name: 'Computer', icon: Monitor, color: '#35C2A0' },
     { id: 'mech', name: 'Mechanical', icon: Cog, color: '#FF6B6B' },
-    { id: 'civil', name: 'Civil', icon: Building2, color: '#FFA726' }
+    { id: 'civil', name: 'Civil', icon: Building2, color: '#FFA726' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -35,14 +55,18 @@ export function ModernNavbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between relative z-50">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group" onClick={closeMobileMenu}>
-          <img 
-            src="/logo.png" 
-            alt="DiploMate Logo" 
+          <img
+            src="/logo.png"
+            alt="DiploMate Logo"
             className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-contain transition-transform duration-200 group-hover:scale-105"
           />
           <div style={{ fontFamily: 'Inter, sans-serif' }}>
-            <span className="text-lg md:text-xl font-bold" style={{ color: '#2F6FED' }}>Diplo</span>
-            <span className="text-lg md:text-xl font-bold" style={{ color: '#35C2A0' }}>Mate</span>
+            <span className="text-lg md:text-xl font-bold" style={{ color: '#2F6FED' }}>
+              Diplo
+            </span>
+            <span className="text-lg md:text-xl font-bold" style={{ color: '#35C2A0' }}>
+              Mate
+            </span>
           </div>
         </Link>
 
@@ -74,12 +98,13 @@ export function ModernNavbar() {
               style={{ fontSize: '15px', fontWeight: 500, color: '#4A4A4A' }}
             >
               Projects
-              <ChevronDown 
+              <ChevronDown
                 className="transition-transform duration-200"
-                style={{ 
-                  width: '16px', height: '16px',
-                  transform: isProjectsDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-                }} 
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  transform: isProjectsDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                }}
               />
             </button>
 
@@ -91,38 +116,59 @@ export function ModernNavbar() {
                     background: 'white',
                     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
                     border: '1px solid rgba(0, 0, 0, 0.06)',
-                    minWidth: '240px'
+                    minWidth: '240px',
                   }}
                 >
                   <Link
-                    to="/microprojects"
+                    to="/projects/microprojects"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-[#F8FAFF] transition-colors duration-200 group"
                   >
-                    <Lightbulb className="w-5 h-5 transition-transform group-hover:scale-110" style={{ color: '#9333EA' }} />
+                    <Lightbulb
+                      className="w-5 h-5 transition-transform group-hover:scale-110"
+                      style={{ color: '#9333EA' }}
+                    />
                     <div>
-                      <div className="font-semibold text-sm" style={{ color: '#1B1B1B' }}>Microprojects</div>
-                      <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>Quick, semester-long projects</div>
+                      <div className="font-semibold text-sm" style={{ color: '#1B1B1B' }}>
+                        Microprojects
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>
+                        Quick, semester-long projects
+                      </div>
                     </div>
                   </Link>
                   <Link
-                    to="/capstone-projects"
+                    to="/projects/capstone"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-[#F8FAFF] transition-colors duration-200 group"
                   >
-                    <Trophy className="w-5 h-5 transition-transform group-hover:scale-110" style={{ color: '#F59E0B' }} />
+                    <Trophy
+                      className="w-5 h-5 transition-transform group-hover:scale-110"
+                      style={{ color: '#F59E0B' }}
+                    />
                     <div>
-                      <div className="font-semibold text-sm" style={{ color: '#1B1B1B' }}>Capstone Projects</div>
-                      <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>Final year major projects</div>
+                      <div className="font-semibold text-sm" style={{ color: '#1B1B1B' }}>
+                        Capstone Projects
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>
+                        Final year major projects
+                      </div>
                     </div>
                   </Link>
                   <Link
-                    to="/custom-build"
+                    to="/projects/custom-build"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-[#F8FAFF] transition-colors duration-200 group border-t"
                     style={{ borderColor: 'rgba(0, 0, 0, 0.06)' }}
                   >
-                    <Zap className="w-5 h-5 transition-transform group-hover:scale-110" style={{ color: '#2F6FED', fill: '#2F6FED' }} />
+                    <Zap
+                      className="w-5 h-5 transition-transform group-hover:scale-110"
+                      style={{ color: '#2F6FED', fill: '#2F6FED' }}
+                    />
                     <div>
-                      <div className="font-semibold text-sm" style={{ color: '#1B1B1B' }}>Custom Build Request</div>
-                      <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>Tailored project solutions</div>
+                      <div className="font-semibold text-sm" style={{ color: '#1B1B1B' }}>
+                        Custom Build Request
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: '#6B7280' }}>
+                        Tailored project solutions
+                      </div>
                     </div>
                   </Link>
                 </div>
@@ -141,12 +187,13 @@ export function ModernNavbar() {
               style={{ fontSize: '15px', fontWeight: 500, color: '#4A4A4A' }}
             >
               Departments
-              <ChevronDown 
+              <ChevronDown
                 className="transition-transform duration-200"
-                style={{ 
-                  width: '16px', height: '16px',
-                  transform: isDepartmentsDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-                }} 
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  transform: isDepartmentsDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                }}
               />
             </button>
 
@@ -158,7 +205,7 @@ export function ModernNavbar() {
                     background: 'white',
                     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
                     border: '1px solid rgba(0, 0, 0, 0.06)',
-                    minWidth: '220px'
+                    minWidth: '220px',
                   }}
                 >
                   {departments.map((dept) => {
@@ -183,7 +230,11 @@ export function ModernNavbar() {
           <Link
             to="/support"
             className="transition-colors duration-200"
-            style={{ fontSize: '15px', fontWeight: 500, color: isActive('/support') ? '#2F6FED' : '#4A4A4A' }}
+            style={{
+              fontSize: '15px',
+              fontWeight: 500,
+              color: isActive('/support') ? '#2F6FED' : '#4A4A4A',
+            }}
           >
             Support
           </Link>
@@ -191,7 +242,11 @@ export function ModernNavbar() {
           <Link
             to="/faqs"
             className="relative py-2 transition-colors duration-200"
-            style={{ fontSize: '15px', fontWeight: 500, color: isActive('/faqs') ? '#2F6FED' : '#4A4A4A' }}
+            style={{
+              fontSize: '15px',
+              fontWeight: 500,
+              color: isActive('/faqs') ? '#2F6FED' : '#4A4A4A',
+            }}
           >
             FAQs
             {isActive('/faqs') && (
@@ -247,7 +302,6 @@ export function ModernNavbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden fixed inset-0 bg-white z-40 overflow-y-auto animate-slide-down h-[100dvh]">
           <div className="pt-24 px-5 pb-6 flex flex-col gap-2">
-            
             {/* Home Link */}
             <Link
               to="/"
@@ -271,22 +325,34 @@ export function ModernNavbar() {
                   <Lightbulb className="w-5 h-5 text-purple-600" />
                   <span className="text-base font-semibold text-gray-800">Projects</span>
                 </div>
-                <ChevronDown 
+                <ChevronDown
                   className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${mobileProjectsExpanded ? 'rotate-180' : ''}`}
                 />
               </button>
-              
+
               {mobileProjectsExpanded && (
                 <div className="bg-gray-50/50 px-4 py-2 space-y-1">
-                  <Link to="/microprojects" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-all">
+                  <Link
+                    to="/projects/microprojects"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-all"
+                  >
                     <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
                     Microprojects
                   </Link>
-                  <Link to="/capstone-projects" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-all">
+                  <Link
+                    to="/projects/capstone"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-all"
+                  >
                     <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                     Capstone Projects
                   </Link>
-                  <Link to="/custom-build" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-blue-600 font-medium hover:bg-white hover:shadow-sm transition-all">
+                  <Link
+                    to="/projects/custom-build"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-blue-600 font-medium hover:bg-white hover:shadow-sm transition-all"
+                  >
                     <Zap className="w-4 h-4 fill-blue-600" />
                     Custom Build Request
                   </Link>
@@ -307,11 +373,11 @@ export function ModernNavbar() {
                   <BookOpen className="w-5 h-5 text-blue-600" />
                   <span className="text-base font-semibold text-gray-800">Departments</span>
                 </div>
-                <ChevronDown 
+                <ChevronDown
                   className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${mobileDepartmentsExpanded ? 'rotate-180' : ''}`}
                 />
               </button>
-              
+
               {mobileDepartmentsExpanded && (
                 <div className="bg-gray-50/50 px-4 py-2 space-y-1">
                   {departments.map((dept) => {
@@ -366,7 +432,10 @@ export function ModernNavbar() {
                   Go to Dashboard
                 </Link>
                 <button
-                  onClick={() => { logout(); closeMobileMenu(); }}
+                  onClick={() => {
+                    logout();
+                    closeMobileMenu();
+                  }}
                   className="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl font-semibold border border-red-100 text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
                 >
                   <LogOut className="w-5 h-5" />

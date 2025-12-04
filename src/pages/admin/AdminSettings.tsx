@@ -30,11 +30,7 @@ export function AdminSettings() {
   }, []);
 
   const fetchSettings = async () => {
-    const { data, error } = await supabase
-      .from('settings')
-      .select('*')
-      .limit(1)
-      .maybeSingle();
+    const { data, error } = await supabase.from('settings').select('*').limit(1).maybeSingle();
 
     if (!error && data) setSettings(data);
     setLoading(false);
@@ -67,10 +63,12 @@ export function AdminSettings() {
   };
 
   if (loading) {
-    return <div className="animate-pulse space-y-4">
-      <div className="h-8 w-48 bg-slate-200 rounded" />
-      <div className="h-64 bg-slate-200 rounded-xl" />
-    </div>;
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 w-48 bg-slate-200 rounded" />
+        <div className="h-64 bg-slate-200 rounded-xl" />
+      </div>
+    );
   }
 
   if (!settings) {
@@ -116,7 +114,12 @@ export function AdminSettings() {
             <Input
               type="number"
               value={settings.whatsapp_popup_delay_seconds}
-              onChange={(e) => setSettings({ ...settings, whatsapp_popup_delay_seconds: parseInt(e.target.value) || 5 })}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  whatsapp_popup_delay_seconds: parseInt(e.target.value) || 5,
+                })
+              }
               className="max-w-[150px]"
             />
           </div>
@@ -134,7 +137,9 @@ export function AdminSettings() {
             <Input
               type="number"
               value={settings.global_download_limit}
-              onChange={(e) => setSettings({ ...settings, global_download_limit: parseInt(e.target.value) || 3 })}
+              onChange={(e) =>
+                setSettings({ ...settings, global_download_limit: parseInt(e.target.value) || 3 })
+              }
               className="max-w-[150px]"
             />
             <p className="text-sm text-slate-500">Default downloads allowed per purchase</p>
@@ -142,7 +147,9 @@ export function AdminSettings() {
           <div className="flex items-center justify-between">
             <div>
               <Label>Enable Watermarking</Label>
-              <p className="text-sm text-slate-500">Add watermarks to downloaded files (placeholder)</p>
+              <p className="text-sm text-slate-500">
+                Add watermarks to downloaded files (placeholder)
+              </p>
             </div>
             <Switch
               checked={settings.watermark_enabled}
@@ -191,7 +198,9 @@ export function AdminSettings() {
           <CardTitle className="text-lg">Two-Factor Authentication</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-slate-500">2FA configuration coming soon. This feature is planned for future implementation.</p>
+          <p className="text-sm text-slate-500">
+            2FA configuration coming soon. This feature is planned for future implementation.
+          </p>
         </CardContent>
       </Card>
     </div>

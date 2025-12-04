@@ -5,7 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
@@ -17,20 +23,54 @@ interface ContentFormDialogProps {
   onSuccess: () => void;
 }
 
-interface Department { id: string; name: string; }
-interface Semester { id: string; name: string; number: number; department_id: string; }
-interface Subject { id: string; name: string; code: string; department_id: string; semester_id: string; scheme: string; }
+interface Department {
+  id: string;
+  name: string;
+}
+interface Semester {
+  id: string;
+  name: string;
+  number: number;
+  department_id: string;
+}
+interface Subject {
+  id: string;
+  name: string;
+  code: string;
+  department_id: string;
+  semester_id: string;
+  scheme: string;
+}
 
-const studyMaterialTypes = ['vvimp', 'notes', 'imp_questions', 'pyq', 'lab_manuals', 'model_answers'];
+const studyMaterialTypes = [
+  'vvimp',
+  'notes',
+  'imp_questions',
+  'pyq',
+  'lab_manuals',
+  'model_answers',
+];
 const projectTypes = ['microproject', 'capstone', 'custom_build'];
 
 const typeLabels: Record<string, string> = {
-  vvimp: 'VVIMP', notes: 'Notes', imp_questions: 'IMP Questions', pyq: 'PYQ',
-  lab_manuals: 'Lab Manuals', model_answers: 'Model Answers', microproject: 'Microproject', 
-  capstone: 'Capstone', custom_build: 'Custom Build',
+  vvimp: 'VVIMP',
+  notes: 'Notes',
+  imp_questions: 'IMP Questions',
+  pyq: 'PYQ',
+  lab_manuals: 'Lab Manuals',
+  model_answers: 'Model Answers',
+  microproject: 'Microproject',
+  capstone: 'Capstone',
+  custom_build: 'Custom Build',
 };
 
-export function ContentFormDialog({ open, onOpenChange, contentType, editingItem, onSuccess }: ContentFormDialogProps) {
+export function ContentFormDialog({
+  open,
+  onOpenChange,
+  contentType,
+  editingItem,
+  onSuccess,
+}: ContentFormDialogProps) {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -60,7 +100,10 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
       const [deptRes, semRes, subRes] = await Promise.all([
         supabase.from('departments').select('id, name').eq('is_active', true),
         supabase.from('semesters').select('id, name, number, department_id').order('number'),
-        supabase.from('subjects').select('id, name, code, department_id, semester_id, scheme').eq('is_active', true),
+        supabase
+          .from('subjects')
+          .select('id, name, code, department_id, semester_id, scheme')
+          .eq('is_active', true),
       ]);
       setDepartments(deptRes.data || []);
       setSemesters(semRes.data || []);
@@ -108,13 +151,14 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
   }, [editingItem, open]);
 
   // Filter semesters by department
-  const filteredSemesters = semesters.filter(s => s.department_id === form.department_id);
-  
+  const filteredSemesters = semesters.filter((s) => s.department_id === form.department_id);
+
   // Filter subjects by department, semester, and scheme
-  const filteredSubjects = subjects.filter(s => 
-    s.department_id === form.department_id && 
-    s.semester_id === form.semester_id &&
-    (form.scheme ? s.scheme === form.scheme : true)
+  const filteredSubjects = subjects.filter(
+    (s) =>
+      s.department_id === form.department_id &&
+      s.semester_id === form.semester_id &&
+      (form.scheme ? s.scheme === form.scheme : true),
   );
 
   // Validation: Check if required fields are filled
@@ -128,54 +172,54 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
   };
 
   const handleDepartmentChange = (value: string) => {
-    setForm({ 
-      ...form, 
-      department_id: value, 
-      semester_id: '', 
+    setForm({
+      ...form,
+      department_id: value,
+      semester_id: '',
       subject_id: '',
       subject_name: '',
-      subject_code: ''
+      subject_code: '',
     });
   };
 
   const handleSemesterChange = (value: string) => {
-    setForm({ 
-      ...form, 
-      semester_id: value, 
+    setForm({
+      ...form,
+      semester_id: value,
       subject_id: '',
       subject_name: '',
-      subject_code: ''
+      subject_code: '',
     });
   };
 
   const handleSchemeChange = (value: 'K' | 'I') => {
-    setForm({ 
-      ...form, 
-      scheme: value, 
+    setForm({
+      ...form,
+      scheme: value,
       subject_id: '',
       subject_name: '',
-      subject_code: ''
+      subject_code: '',
     });
   };
 
   const handleSubjectChange = (subjectId: string) => {
-    const subject = subjects.find(s => s.id === subjectId);
+    const subject = subjects.find((s) => s.id === subjectId);
     setForm({
       ...form,
       subject_id: subjectId,
       subject_name: subject?.name || '',
-      subject_code: subject?.code || ''
+      subject_code: subject?.code || '',
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isFormValid()) {
       toast.error('Please fill all required fields');
       return;
     }
-    
+
     setLoading(true);
 
     const data: any = {
@@ -186,8 +230,18 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
       price: form.price,
       description: form.description,
       file_url: form.file_url || null,
-      preview_images: form.preview_images ? form.preview_images.split(',').map(s => s.trim()).filter(Boolean) : [],
-      tags: form.tags ? form.tags.split(',').map(s => s.trim()).filter(Boolean) : [],
+      preview_images: form.preview_images
+        ? form.preview_images
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+      tags: form.tags
+        ? form.tags
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
       downloads_allowed: form.downloads_allowed,
       is_published: form.is_published,
     };
@@ -202,7 +256,10 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
 
     try {
       if (editingItem) {
-        const { error } = await supabase.from('content_items').update(data).eq('id', editingItem.id);
+        const { error } = await supabase
+          .from('content_items')
+          .update(data)
+          .eq('id', editingItem.id);
         if (error) throw error;
         toast.success('Updated successfully');
       } else {
@@ -223,7 +280,9 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{editingItem ? 'Edit' : 'Create'} {typeLabels[contentType] || contentType}</DialogTitle>
+          <DialogTitle>
+            {editingItem ? 'Edit' : 'Create'} {typeLabels[contentType] || contentType}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -248,15 +307,17 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
                 </SelectTrigger>
                 <SelectContent>
                   {departments.map((d) => (
-                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
               <Label>Semester *</Label>
-              <Select 
-                value={form.semester_id} 
+              <Select
+                value={form.semester_id}
                 onValueChange={handleSemesterChange}
                 disabled={!form.department_id}
               >
@@ -265,7 +326,9 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
                 </SelectTrigger>
                 <SelectContent>
                   {filteredSemesters.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -277,10 +340,7 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Scheme *</Label>
-                <Select 
-                  value={form.scheme} 
-                  onValueChange={handleSchemeChange}
-                >
+                <Select value={form.scheme} onValueChange={handleSchemeChange}>
                   <SelectTrigger className={!form.scheme ? 'text-muted-foreground' : ''}>
                     <SelectValue placeholder="Select scheme" />
                   </SelectTrigger>
@@ -292,8 +352,8 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
               </div>
               <div className="space-y-2">
                 <Label>Subject</Label>
-                <Select 
-                  value={form.subject_id} 
+                <Select
+                  value={form.subject_id}
                   onValueChange={handleSubjectChange}
                   disabled={!form.department_id || !form.semester_id}
                 >
@@ -302,7 +362,9 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
                   </SelectTrigger>
                   <SelectContent>
                     {filteredSubjects.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>{s.code} - {s.name}</SelectItem>
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.code} - {s.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -328,7 +390,9 @@ export function ContentFormDialog({ open, onOpenChange, contentType, editingItem
                 type="number"
                 min="1"
                 value={form.downloads_allowed}
-                onChange={(e) => setForm({ ...form, downloads_allowed: parseInt(e.target.value) || 3 })}
+                onChange={(e) =>
+                  setForm({ ...form, downloads_allowed: parseInt(e.target.value) || 3 })
+                }
               />
             </div>
           </div>

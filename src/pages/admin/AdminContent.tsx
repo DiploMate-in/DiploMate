@@ -4,7 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { ContentFormDialog } from '@/components/admin/ContentFormDialog';
@@ -35,7 +41,7 @@ const typeLabels: Record<string, string> = {
   model_answers: 'Model Answers',
   microproject: 'Microprojects',
   capstone: 'Capstone Projects',
-  custom_build: 'Custom Build Requests'
+  custom_build: 'Custom Build Requests',
 };
 
 export function AdminContent() {
@@ -50,7 +56,7 @@ export function AdminContent() {
   const [editingItem, setEditingItem] = useState<ContentItem | null>(null);
 
   // Normalize type from URL to database type
-  const contentType = type === 'microprojects' ? 'microproject' : (type || 'notes');
+  const contentType = type === 'microprojects' ? 'microproject' : type || 'notes';
   const pageTitle = typeLabels[contentType] || 'Content';
 
   useEffect(() => {
@@ -63,17 +69,19 @@ export function AdminContent() {
       const [contentRes, deptRes] = await Promise.all([
         supabase
           .from('content_items')
-          .select(`
+          .select(
+            `
             id, title, type, price, is_published, created_at,
             departments:department_id(name),
             semesters:semester_id(name)
-          `)
+          `,
+          )
           .eq('type', contentType)
           .order('created_at', { ascending: false }),
         supabase.from('departments').select('id, name'),
       ]);
 
-      setContent(contentRes.data as any || []);
+      setContent((contentRes.data as any) || []);
       setDepartments(deptRes.data || []);
     } catch (error) {
       toast.error('Failed to fetch content');
@@ -97,7 +105,8 @@ export function AdminContent() {
   const filteredContent = content.filter((item) => {
     const matchesSearch = item.title.toLowerCase().includes(search.toLowerCase());
     const matchesDept = filterDept === 'all' || item.departments?.name === filterDept;
-    const matchesPublished = filterPublished === 'all' || 
+    const matchesPublished =
+      filterPublished === 'all' ||
       (filterPublished === 'published' ? item.is_published : !item.is_published);
     return matchesSearch && matchesDept && matchesPublished;
   });
@@ -106,7 +115,12 @@ export function AdminContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">{pageTitle}</h1>
-        <Button onClick={() => { setEditingItem(null); setDialogOpen(true); }}>
+        <Button
+          onClick={() => {
+            setEditingItem(null);
+            setDialogOpen(true);
+          }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add New
         </Button>
@@ -132,7 +146,9 @@ export function AdminContent() {
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
                 {departments.map((d) => (
-                  <SelectItem key={d.id} value={d.name}>{d.name}</SelectItem>
+                  <SelectItem key={d.id} value={d.name}>
+                    {d.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -153,16 +169,19 @@ export function AdminContent() {
       {/* Table */}
       <Card className="border-0 shadow-sm">
         <CardContent className="p-0">
-          <ResourceTable 
+          <ResourceTable
             data={filteredContent}
             loading={loading}
-            onEdit={(item) => { setEditingItem(item); setDialogOpen(true); }}
+            onEdit={(item) => {
+              setEditingItem(item);
+              setDialogOpen(true);
+            }}
             onDelete={handleDelete}
           />
         </CardContent>
       </Card>
 
-      <ContentFormDialog 
+      <ContentFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         contentType={contentType}

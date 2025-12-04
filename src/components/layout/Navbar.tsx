@@ -43,17 +43,17 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-background/95 backdrop-blur-lg shadow-sm" : "bg-background"
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        isScrolled ? 'bg-background/95 backdrop-blur-lg shadow-sm' : 'bg-background',
       )}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img 
-              src="/logo.png" 
-              alt="DiploMate Logo" 
+            <img
+              src="/logo.png"
+              alt="DiploMate Logo"
               className="w-8 h-8 rounded-lg object-contain"
             />
             <span className="font-bold text-xl text-foreground">
@@ -68,10 +68,10 @@ export function Navbar() {
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                  'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
                   location.pathname + location.search === link.href
-                    ? "text-primary bg-primary/5"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    ? 'text-primary bg-primary/5'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary',
                 )}
               >
                 {link.label}
@@ -121,7 +121,9 @@ export function Navbar() {
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link to="/login">
-                  <Button variant="ghost" size="sm">Login</Button>
+                  <Button variant="ghost" size="sm">
+                    Login
+                  </Button>
                 </Link>
                 <Link to="/signup">
                   <Button size="sm">Sign Up</Button>
@@ -190,7 +192,10 @@ export function Navbar() {
             <div className="border-t pt-4 mt-4">
               {isAuthenticated ? (
                 <>
-                  <Link to="/dashboard" className="block px-4 py-3 text-sm font-medium rounded-lg hover:bg-secondary">
+                  <Link
+                    to="/dashboard"
+                    className="block px-4 py-3 text-sm font-medium rounded-lg hover:bg-secondary"
+                  >
                     Dashboard
                   </Link>
                   <button
@@ -203,7 +208,9 @@ export function Navbar() {
               ) : (
                 <div className="flex gap-2">
                   <Link to="/login" className="flex-1">
-                    <Button variant="outline" className="w-full">Login</Button>
+                    <Button variant="outline" className="w-full">
+                      Login
+                    </Button>
                   </Link>
                   <Link to="/signup" className="flex-1">
                     <Button className="w-full">Sign Up</Button>

@@ -37,7 +37,7 @@ export function Wishlist() {
 
         if (contentData) {
           // Map to ContentItem type
-          const items: ContentItem[] = contentData.map(item => ({
+          const items: ContentItem[] = contentData.map((item) => ({
             id: item.id,
             title: item.title,
             description: item.description || '',
@@ -53,13 +53,13 @@ export function Wishlist() {
             format: item.file_format || 'PDF',
             rating: item.rating || 0,
             reviewCount: item.review_count || 0,
-            createdAt: item.created_at
+            createdAt: item.created_at,
           }));
-          
+
           setWishlistItems(items);
 
           // Fetch departments
-          const deptIds = [...new Set(contentData.map(item => item.department_id))];
+          const deptIds = [...new Set(contentData.map((item) => item.department_id))];
           if (deptIds.length > 0) {
             const { data: deptData, error: deptError } = await supabase
               .from('departments')
@@ -69,10 +69,13 @@ export function Wishlist() {
             if (deptError) throw deptError;
 
             if (deptData) {
-              const deptMap = deptData.reduce((acc, dept) => {
-                acc[dept.id] = dept;
-                return acc;
-              }, {} as Record<string, DepartmentDB>);
+              const deptMap = deptData.reduce(
+                (acc, dept) => {
+                  acc[dept.id] = dept;
+                  return acc;
+                },
+                {} as Record<string, DepartmentDB>,
+              );
               setDepartments(deptMap);
             }
           }
@@ -100,13 +103,17 @@ export function Wishlist() {
             <Heart className="h-8 w-8 text-muted-foreground" />
           </div>
           <h2 className="text-2xl font-bold mb-2">Sign in to view your wishlist</h2>
-          <p className="text-muted-foreground mb-6">Save your favorite items and access them anytime</p>
+          <p className="text-muted-foreground mb-6">
+            Save your favorite items and access them anytime
+          </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/login">
               <Button size="lg">Login</Button>
             </Link>
             <Link to="/signup">
-              <Button variant="outline" size="lg">Create Account</Button>
+              <Button variant="outline" size="lg">
+                Create Account
+              </Button>
             </Link>
           </div>
         </div>
@@ -127,15 +134,15 @@ export function Wishlist() {
 
         {/* Content */}
         {loading ? (
-           <div className="flex justify-center py-8">
-             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-           </div>
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
         ) : wishlistItems.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {wishlistItems.map((item) => (
-              <ContentCard 
-                key={item.id} 
-                item={item} 
+              <ContentCard
+                key={item.id}
+                item={item}
                 departmentCode={departments[item.departmentId]?.code}
               />
             ))}

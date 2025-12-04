@@ -31,7 +31,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
-  
+
   // Ref to track the latest data fetch request to avoid race conditions
   const latestFetchIdRef = useRef<number>(0);
 
@@ -72,19 +72,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Only update state if this is still the latest request
       if (fetchId === latestFetchIdRef.current) {
         if (wishlistData) {
-          setWishlist(wishlistData.map(w => w.content_item_id));
+          setWishlist(wishlistData.map((w) => w.content_item_id));
         }
 
         if (purchasesData) {
-          setPurchases(purchasesData.map(p => ({
-            id: p.id,
-            userId: p.user_id,
-            contentItemId: p.content_item_id,
-            price: p.price,
-            status: p.status as 'pending' | 'completed' | 'refunded',
-            purchasedAt: p.purchased_at,
-            downloadsRemaining: p.downloads_remaining,
-          })));
+          setPurchases(
+            purchasesData.map((p) => ({
+              id: p.id,
+              userId: p.user_id,
+              contentItemId: p.content_item_id,
+              price: p.price,
+              status: p.status as 'pending' | 'completed' | 'refunded',
+              purchasedAt: p.purchased_at,
+              downloadsRemaining: p.downloads_remaining,
+            })),
+          );
         }
       }
     } catch (error) {
@@ -105,7 +107,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSession(initialSession);
       setUser(initialSession?.user ?? null);
       setIsLoading(false);
-      
+
       if (initialSession?.user) {
         refreshUserData(initialSession.user.id);
       } else {
@@ -114,21 +116,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
 
     // Auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        setIsLoading(false);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+      setIsLoading(false);
 
-        if (newSession?.user) {
-          refreshUserData(newSession.user.id);
-        } else {
-          setWishlist([]);
-          setPurchases([]);
-          setIsDataLoading(false);
-        }
+      if (newSession?.user) {
+        refreshUserData(newSession.user.id);
+      } else {
+        setWishlist([]);
+        setPurchases([]);
+        setIsDataLoading(false);
       }
-    );
+    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -151,9 +153,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setPurchases([]);
   };
 
-  const signup = async (name: string, email: string, password: string): Promise<{ error: string | null }> => {
+  const signup = async (
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<{ error: string | null }> => {
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -190,20 +196,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         if (error) throw error;
 
-        setWishlist(prev => prev.filter(id => id !== itemId));
+        setWishlist((prev) => prev.filter((id) => id !== itemId));
         toast.success('Removed from wishlist');
       } else {
         // Add to wishlist
-        const { error } = await supabase
-          .from('wishlist')
-          .insert({
-            user_id: session.user.id,
-            content_item_id: itemId,
-          });
+        const { error } = await supabase.from('wishlist').insert({
+          user_id: session.user.id,
+          content_item_id: itemId,
+        });
 
         if (error) throw error;
 
-        setWishlist(prev => [...prev, itemId]);
+        setWishlist((prev) => [...prev, itemId]);
         toast.success('Added to wishlist');
       }
     } catch (error) {
@@ -244,7 +248,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           purchasedAt: data.purchased_at,
           downloadsRemaining: data.downloads_remaining,
         };
-        setPurchases(prev => [...prev, newPurchase]);
+        setPurchases((prev) => [...prev, newPurchase]);
         toast.success('Purchase successful!');
       }
     } catch (error) {
@@ -253,27 +257,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const getPurchasedItem = (itemId: string) =>
-    purchases.find(p => p.contentItemId === itemId);
+  const getPurchasedItem = (itemId: string) => purchases.find((p) => p.contentItemId === itemId);
 
   return (
-    <AppContext.Provider value={{
-      user,
-      session,
-      isAuthenticated,
-      isLoading,
-      isDataLoading,
-      wishlist,
-      purchases,
-      login,
-      logout,
-      signup,
-      toggleWishlist,
-      isInWishlist,
-      addPurchase,
-      getPurchasedItem,
-      refreshUserData,
-    }}>
+    <AppContext.Provider
+      value={{
+        user,
+        session,
+        isAuthenticated,
+        isLoading,
+        isDataLoading,
+        wishlist,
+        purchases,
+        login,
+        logout,
+        signup,
+        toggleWishlist,
+        isInWishlist,
+        addPurchase,
+        getPurchasedItem,
+        refreshUserData,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

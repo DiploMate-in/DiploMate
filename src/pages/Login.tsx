@@ -24,32 +24,32 @@ export function Login() {
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
-    
+
     if (!email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!password) {
       newErrors.password = 'Password is required';
     } else if (password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validate()) return;
-    
+
     setIsLoading(true);
     const { error } = await login(email, password);
     setIsLoading(false);
-    
+
     if (!error) {
       toast.success('Welcome back!');
       navigate('/dashboard');
@@ -100,15 +100,13 @@ export function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={cn(
-                    "w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20",
-                    errors.email && "ring-2 ring-destructive/50"
+                    'w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20',
+                    errors.email && 'ring-2 ring-destructive/50',
                   )}
                   placeholder="you@example.com"
                 />
               </div>
-              {errors.email && (
-                <p className="text-xs text-destructive mt-1">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
             </div>
 
             {/* Password */}
@@ -121,8 +119,8 @@ export function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={cn(
-                    "w-full pl-10 pr-12 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20",
-                    errors.password && "ring-2 ring-destructive/50"
+                    'w-full pl-10 pr-12 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20',
+                    errors.password && 'ring-2 ring-destructive/50',
                   )}
                   placeholder="••••••••"
                 />

@@ -16,7 +16,9 @@ export function AdminLayout() {
 
   useEffect(() => {
     const checkAdminAccess = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session) {
         navigate('/admin/login');
@@ -32,13 +34,17 @@ export function AdminLayout() {
         return;
       }
 
-      setAdminName(session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Admin');
+      setAdminName(
+        session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Admin',
+      );
       setLoading(false);
     };
 
     checkAdminAccess();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         navigate('/admin/login');
       }
@@ -62,16 +68,15 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <AdminSidebar 
-        collapsed={sidebarCollapsed} 
+      <AdminSidebar
+        collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
         currentPath={location.pathname}
       />
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-        <AdminHeader 
-          adminName={adminName} 
-          onLogout={handleLogout}
-        />
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}
+      >
+        <AdminHeader adminName={adminName} onLogout={handleLogout} />
         <main className="flex-1 p-6 overflow-auto">
           <Outlet />
         </main>

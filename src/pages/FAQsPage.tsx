@@ -7,28 +7,34 @@ import { ChevronDown } from 'lucide-react';
 const faqs = [
   {
     question: 'What type of content do you offer?',
-    answer: 'We offer premium study notes, microprojects, and capstone projects for diploma engineering students across AIML, Computer, Mechanical, and Civil departments.'
+    answer:
+      'We offer premium study notes, microprojects, and capstone projects for diploma engineering students across AIML, Computer, Mechanical, and Civil departments.',
   },
   {
     question: 'How do I download purchased content?',
-    answer: 'After purchase, go to your dashboard where you can download your content. Each purchase comes with a limited number of downloads for security purposes.'
+    answer:
+      'After purchase, go to your dashboard where you can download your content. Each purchase comes with a limited number of downloads for security purposes.',
   },
   {
     question: 'What payment methods do you accept?',
-    answer: 'We accept all major payment methods including UPI, credit/debit cards, and net banking through our secure payment gateway.'
+    answer:
+      'We accept all major payment methods including UPI, credit/debit cards, and net banking through our secure payment gateway.',
   },
   {
     question: 'Can I get a refund?',
-    answer: 'Due to the digital nature of our products, we generally do not offer refunds. However, if you face any issues with your purchase, please contact our support team.'
+    answer:
+      'Due to the digital nature of our products, we generally do not offer refunds. However, if you face any issues with your purchase, please contact our support team.',
   },
   {
     question: 'Are the projects plagiarism-free?',
-    answer: 'Yes, all our projects are original and come with proper documentation. However, we recommend customizing them for your specific requirements.'
+    answer:
+      'Yes, all our projects are original and come with proper documentation. However, we recommend customizing them for your specific requirements.',
   },
   {
     question: 'How can I request a custom project?',
-    answer: 'You can submit a custom build request through our Custom Build page. Our team will review your requirements and get back to you with a quote.'
-  }
+    answer:
+      'You can submit a custom build request through our Custom Build page. Our team will review your requirements and get back to you with a quote.',
+  },
 ];
 
 export function FAQsPage() {
@@ -37,7 +43,7 @@ export function FAQsPage() {
   return (
     <div className="min-h-screen" style={{ background: '#F8FAFF' }}>
       <ModernNavbar />
-      
+
       <main className="pt-24 pb-16 px-6">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
@@ -65,11 +71,11 @@ export function FAQsPage() {
                   <span className="font-semibold" style={{ color: '#1B1B1B' }}>
                     {faq.question}
                   </span>
-                  <ChevronDown 
+                  <ChevronDown
                     className="w-5 h-5 transition-transform"
-                    style={{ 
+                    style={{
                       color: '#6B7280',
-                      transform: openIndex === idx ? 'rotate(180deg)' : 'rotate(0deg)'
+                      transform: openIndex === idx ? 'rotate(180deg)' : 'rotate(0deg)',
                     }}
                   />
                 </button>

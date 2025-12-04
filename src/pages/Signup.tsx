@@ -25,38 +25,38 @@ export function Signup() {
 
   const validate = () => {
     const newErrors: { name?: string; email?: string; password?: string } = {};
-    
+
     if (!name.trim()) {
       newErrors.name = 'Name is required';
     } else if (name.trim().length < 2) {
       newErrors.name = 'Name must be at least 2 characters';
     }
-    
+
     if (!email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!password) {
       newErrors.password = 'Password is required';
     } else if (password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validate()) return;
-    
+
     setIsLoading(true);
     const { error } = await signup(name.trim(), email, password);
     setIsLoading(false);
-    
+
     if (!error) {
       toast.success('Account created! Please check your email to confirm your account.');
       navigate('/login');
@@ -105,15 +105,13 @@ export function Signup() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className={cn(
-                    "w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20",
-                    errors.name && "ring-2 ring-destructive/50"
+                    'w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20',
+                    errors.name && 'ring-2 ring-destructive/50',
                   )}
                   placeholder="John Doe"
                 />
               </div>
-              {errors.name && (
-                <p className="text-xs text-destructive mt-1">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
             </div>
 
             {/* Email */}
@@ -126,15 +124,13 @@ export function Signup() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={cn(
-                    "w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20",
-                    errors.email && "ring-2 ring-destructive/50"
+                    'w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20',
+                    errors.email && 'ring-2 ring-destructive/50',
                   )}
                   placeholder="you@example.com"
                 />
               </div>
-              {errors.email && (
-                <p className="text-xs text-destructive mt-1">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
             </div>
 
             {/* Password */}
@@ -147,8 +143,8 @@ export function Signup() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={cn(
-                    "w-full pl-10 pr-12 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20",
-                    errors.password && "ring-2 ring-destructive/50"
+                    'w-full pl-10 pr-12 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20',
+                    errors.password && 'ring-2 ring-destructive/50',
                   )}
                   placeholder="••••••••"
                 />
@@ -175,9 +171,13 @@ export function Signup() {
           {/* Terms */}
           <p className="text-xs text-center text-muted-foreground mt-4">
             By signing up, you agree to our{' '}
-            <Link to="/terms" className="text-primary hover:underline">Terms</Link>
-            {' '}and{' '}
-            <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+            <Link to="/terms" className="text-primary hover:underline">
+              Terms
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacy" className="text-primary hover:underline">
+              Privacy Policy
+            </Link>
           </p>
 
           {/* Divider */}

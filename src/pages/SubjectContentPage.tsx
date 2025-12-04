@@ -39,9 +39,9 @@ const materialTitles: Record<string, string> = {
 };
 
 export default function SubjectContentPage() {
-  const { deptCode, materialType, subjectId } = useParams<{ 
-    deptCode: string; 
-    materialType: string; 
+  const { deptCode, materialType, subjectId } = useParams<{
+    deptCode: string;
+    materialType: string;
     subjectId: string;
   }>();
   const [subject, setSubject] = useState<Subject | null>(null);
@@ -62,7 +62,7 @@ export default function SubjectContentPage() {
           .eq('type', materialType)
           .eq('is_published', true)
           .order('created_at', { ascending: false }),
-        supabase.rpc('get_subject_total_value', { subject_uuid: subjectId })
+        supabase.rpc('get_subject_total_value', { subject_uuid: subjectId }),
       ]);
 
       if (subjectRes.data) setSubject(subjectRes.data);
@@ -84,14 +84,15 @@ export default function SubjectContentPage() {
 
   const materialTitle = materialType ? materialTitles[materialType] || materialType : '';
   const bundlePrice = subject?.bundle_price;
-  const hasBundle = bundlePrice !== undefined && bundlePrice !== null && bundlePrice < totalSubjectValue;
+  const hasBundle =
+    bundlePrice !== undefined && bundlePrice !== null && bundlePrice < totalSubjectValue;
 
   return (
     <div className="min-h-screen bg-background">
       <ModernNavbar />
-      
+
       <div className="container mx-auto px-4 py-8">
-        <Link 
+        <Link
           to={`/department/${deptCode}/${materialType}`}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
         >
@@ -116,18 +117,28 @@ export default function SubjectContentPage() {
                 Get Full Subject Bundle
               </h3>
               <p className="text-green-700 dark:text-green-400 text-sm">
-                Unlock all materials for {subject?.name} at a special discounted price. 
-                <span className="font-semibold ml-1">Save ₹{totalSubjectValue - (bundlePrice || 0)}!</span>
+                Unlock all materials for {subject?.name} at a special discounted price.
+                <span className="font-semibold ml-1">
+                  Save ₹{totalSubjectValue - (bundlePrice || 0)}!
+                </span>
               </p>
             </div>
             <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
               <div className="text-right">
-                <div className="text-xs text-muted-foreground uppercase font-semibold">Total Value</div>
-                <div className="text-sm text-muted-foreground line-through">₹{totalSubjectValue}</div>
+                <div className="text-xs text-muted-foreground uppercase font-semibold">
+                  Total Value
+                </div>
+                <div className="text-sm text-muted-foreground line-through">
+                  ₹{totalSubjectValue}
+                </div>
               </div>
               <div className="text-right border-l pl-4 border-green-200 dark:border-green-800">
-                <div className="text-xs text-green-700 dark:text-green-400 uppercase font-semibold">Bundle Price</div>
-                <div className="text-2xl font-bold text-green-700 dark:text-green-400">₹{bundlePrice}</div>
+                <div className="text-xs text-green-700 dark:text-green-400 uppercase font-semibold">
+                  Bundle Price
+                </div>
+                <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+                  ₹{bundlePrice}
+                </div>
               </div>
               <Button className="bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all whitespace-nowrap">
                 Buy Bundle Now
@@ -145,25 +156,27 @@ export default function SubjectContentPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {content.map((item) => (
-              <div 
+              <div
                 key={item.id}
                 className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
               >
                 {item.preview_images && item.preview_images[0] && (
                   <div className="aspect-video bg-muted relative overflow-hidden">
-                    <img 
-                      src={item.preview_images[0]} 
+                    <img
+                      src={item.preview_images[0]}
                       alt={item.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
                 )}
-                
+
                 <div className="p-5">
                   <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{item.title}</h3>
-                  
+
                   {item.description && (
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      {item.description}
+                    </p>
                   )}
 
                   {item.tags && item.tags.length > 0 && (

@@ -1,6 +1,16 @@
 import { ModernNavbar } from '@/components/layout/ModernNavbar';
 import { FooterSection } from '@/components/home/FooterSection';
-import { Headphones, MessageCircle, Mail, Phone, HelpCircle, FileText, CreditCard, Home, ChevronRight } from 'lucide-react';
+import {
+  Headphones,
+  MessageCircle,
+  Mail,
+  Phone,
+  HelpCircle,
+  FileText,
+  CreditCard,
+  Home,
+  ChevronRight,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +21,7 @@ export function Support() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: '#F8FAFF' }}>
       <ModernNavbar />
-      
+
       <main className="flex-grow container mx-auto px-4 py-6">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm text-muted-foreground mb-8">
@@ -29,7 +39,9 @@ export function Support() {
             <Headphones className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">Support Center</h1>
-          <p className="text-slate-500 text-lg">We're here to help! Choose your preferred way to reach us</p>
+          <p className="text-slate-500 text-lg">
+            We're here to help! Choose your preferred way to reach us
+          </p>
         </div>
 
         {/* Contact Us Section */}
@@ -85,34 +97,49 @@ export function Support() {
           <h2 className="text-xl font-bold text-center mb-8 text-slate-800">Quick Help</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {/* FAQs */}
-            <Link to="/faqs" className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow group">
+            <Link
+              to="/faqs"
+              className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow group"
+            >
               <div className="mt-1">
                 <HelpCircle className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">FAQs</h3>
+                <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">
+                  FAQs
+                </h3>
                 <p className="text-slate-500 text-sm">Find quick answers</p>
               </div>
             </Link>
 
             {/* How to Buy */}
-            <Link to="/how-to-buy" className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow group">
+            <Link
+              to="/how-to-buy"
+              className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow group"
+            >
               <div className="mt-1">
                 <FileText className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">How to Buy</h3>
+                <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">
+                  How to Buy
+                </h3>
                 <p className="text-slate-500 text-sm">Purchase guide</p>
               </div>
             </Link>
 
             {/* Payment Help */}
-            <Link to="/payment-help" className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow group">
+            <Link
+              to="/payment-help"
+              className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start gap-4 hover:shadow-md transition-shadow group"
+            >
               <div className="mt-1">
                 <CreditCard className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">Payment Help</h3>
+                <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">
+                  Payment Help
+                </h3>
                 <p className="text-slate-500 text-sm">Payment assistance</p>
               </div>
             </Link>

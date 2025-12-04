@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Search, Eye } from 'lucide-react';
 import { format } from 'date-fns';
@@ -36,17 +42,19 @@ export function AdminOrders() {
     setLoading(true);
     const { data, error } = await supabase
       .from('purchases')
-      .select(`
+      .select(
+        `
         id, price, status, payment_provider, purchased_at, user_id, content_item_id,
         profiles:user_id(email, name),
         content_items:content_item_id(title)
-      `)
+      `,
+      )
       .order('purchased_at', { ascending: false });
 
     if (error) {
       console.error('Error:', error);
     } else {
-      setPurchases(data as any || []);
+      setPurchases((data as any) || []);
     }
     setLoading(false);
   };
@@ -63,7 +71,7 @@ export function AdminOrders() {
   };
 
   const filteredPurchases = purchases.filter((p) => {
-    const matchesSearch = 
+    const matchesSearch =
       p.profiles?.email?.toLowerCase().includes(search.toLowerCase()) ||
       p.content_items?.title?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = filterStatus === 'all' || p.status === filterStatus;
@@ -121,27 +129,45 @@ export function AdminOrders() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} className="p-8 text-center text-slate-500">Loading...</td></tr>
+                  <tr>
+                    <td colSpan={8} className="p-8 text-center text-slate-500">
+                      Loading...
+                    </td>
+                  </tr>
                 ) : filteredPurchases.length === 0 ? (
-                  <tr><td colSpan={8} className="p-8 text-center text-slate-500">No orders found</td></tr>
+                  <tr>
+                    <td colSpan={8} className="p-8 text-center text-slate-500">
+                      No orders found
+                    </td>
+                  </tr>
                 ) : (
                   filteredPurchases.map((p) => (
                     <tr key={p.id} className="border-b hover:bg-slate-50">
-                      <td className="p-4 font-mono text-xs text-slate-600">{p.id.slice(0, 8)}...</td>
+                      <td className="p-4 font-mono text-xs text-slate-600">
+                        {p.id.slice(0, 8)}...
+                      </td>
                       <td className="p-4 text-slate-900">{p.profiles?.email || '-'}</td>
                       <td className="p-4 text-slate-600">{p.content_items?.title || '-'}</td>
                       <td className="p-4 text-slate-900 font-medium">₹{p.price}</td>
                       <td className="p-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          p.status === 'completed' ? 'bg-green-100 text-green-700' :
-                          p.status === 'refunded' ? 'bg-orange-100 text-orange-700' :
-                          'bg-red-100 text-red-700'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            p.status === 'completed'
+                              ? 'bg-green-100 text-green-700'
+                              : p.status === 'refunded'
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-red-100 text-red-700'
+                          }`}
+                        >
                           {p.status}
                         </span>
                       </td>
-                      <td className="p-4 text-slate-600 capitalize">{p.payment_provider || 'test'}</td>
-                      <td className="p-4 text-slate-600">{format(new Date(p.purchased_at), 'MMM d, yyyy')}</td>
+                      <td className="p-4 text-slate-600 capitalize">
+                        {p.payment_provider || 'test'}
+                      </td>
+                      <td className="p-4 text-slate-600">
+                        {format(new Date(p.purchased_at), 'MMM d, yyyy')}
+                      </td>
                       <td className="p-4 text-right">
                         <Button variant="ghost" size="sm" onClick={() => setSelectedPurchase(p)}>
                           <Eye className="w-4 h-4" />
@@ -191,8 +217,8 @@ export function AdminOrders() {
                 </div>
               </div>
               {selectedPurchase.status === 'completed' && (
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   className="w-full"
                   onClick={() => handleRefund(selectedPurchase.id)}
                 >

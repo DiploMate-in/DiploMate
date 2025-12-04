@@ -6,7 +6,13 @@ import { FooterSection } from '@/components/home/FooterSection';
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Search, Star, FileText, BookOpen } from 'lucide-react';
 
@@ -36,21 +42,23 @@ export function NotesPage() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      
+
       const [notesRes, deptRes] = await Promise.all([
         supabase
           .from('content_items')
-          .select(`
+          .select(
+            `
             id, title, description, price, rating, tags,
             departments:department_id(name, code)
-          `)
+          `,
+          )
           .eq('type', 'notes')
           .eq('is_published', true)
           .order('created_at', { ascending: false }),
-        supabase.from('departments').select('id, name, code').eq('is_active', true)
+        supabase.from('departments').select('id, name, code').eq('is_active', true),
       ]);
 
-      setNotes(notesRes.data as any[] || []);
+      setNotes((notesRes.data as any[]) || []);
       setDepartments(deptRes.data || []);
       setLoading(false);
     };
@@ -60,14 +68,15 @@ export function NotesPage() {
 
   const filteredNotes = notes.filter((item) => {
     const matchesSearch = item.title.toLowerCase().includes(search.toLowerCase());
-    const matchesDept = filterDept === 'all' || item.departments?.code?.toLowerCase() === filterDept.toLowerCase();
+    const matchesDept =
+      filterDept === 'all' || item.departments?.code?.toLowerCase() === filterDept.toLowerCase();
     return matchesSearch && matchesDept;
   });
 
   return (
     <div className="min-h-screen bg-background">
       <ModernNavbar />
-      
+
       <div className="container mx-auto px-4 pt-24 pb-8">
         {/* Header */}
         <div className="mb-8">
@@ -75,7 +84,9 @@ export function NotesPage() {
             <BookOpen className="w-8 h-8 text-primary" />
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">Study Notes</h1>
           </div>
-          <p className="text-muted-foreground">Premium notes for all diploma engineering departments</p>
+          <p className="text-muted-foreground">
+            Premium notes for all diploma engineering departments
+          </p>
           <p className="text-sm text-primary mt-1">{filteredNotes.length} Notes Available</p>
         </div>
 
@@ -98,7 +109,9 @@ export function NotesPage() {
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
                 {departments.map((d) => (
-                  <SelectItem key={d.id} value={d.code.toLowerCase()}>{d.name}</SelectItem>
+                  <SelectItem key={d.id} value={d.code.toLowerCase()}>
+                    {d.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -119,12 +132,14 @@ export function NotesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredNotes.map((item) => (
-              <div 
+              <div
                 key={item.id}
                 className="bg-card border border-border rounded-xl p-5 hover:shadow-lg transition-all duration-300"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">NOTES</Badge>
+                  <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    NOTES
+                  </Badge>
                   {item.rating && item.rating > 0 && (
                     <div className="flex items-center gap-1 text-amber-500">
                       <Star className="w-4 h-4 fill-current" />
@@ -134,7 +149,7 @@ export function NotesPage() {
                 </div>
 
                 <h3 className="font-semibold text-foreground mb-1 line-clamp-2">{item.title}</h3>
-                
+
                 {item.departments && (
                   <p className="text-sm text-primary mb-3">{item.departments.name}</p>
                 )}

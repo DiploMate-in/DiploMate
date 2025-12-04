@@ -1,6 +1,16 @@
 import { ModernNavbar } from '@/components/layout/ModernNavbar';
 import { FooterSection } from '@/components/home/FooterSection';
-import { CreditCard, Smartphone, Landmark, Wallet, Lock, HelpCircle, ShieldCheck, Zap, Layers } from 'lucide-react';
+import {
+  CreditCard,
+  Smartphone,
+  Landmark,
+  Wallet,
+  Lock,
+  HelpCircle,
+  ShieldCheck,
+  Zap,
+  Layers,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function PaymentHelp() {
@@ -10,29 +20,29 @@ export function PaymentHelp() {
       iconColor: 'text-blue-500',
       iconBg: 'bg-blue-50',
       title: 'UPI Payment',
-      items: ['Google Pay', 'PhonePe', 'Paytm', 'BHIM UPI', 'Any UPI App']
+      items: ['Google Pay', 'PhonePe', 'Paytm', 'BHIM UPI', 'Any UPI App'],
     },
     {
       icon: CreditCard,
       iconColor: 'text-green-500',
       iconBg: 'bg-green-50',
       title: 'Cards',
-      items: ['Visa', 'Mastercard', 'RuPay', 'Maestro', 'Credit & Debit Cards']
+      items: ['Visa', 'Mastercard', 'RuPay', 'Maestro', 'Credit & Debit Cards'],
     },
     {
       icon: Landmark,
       iconColor: 'text-red-500',
       iconBg: 'bg-red-50',
       title: 'Net Banking',
-      items: ['All Major Banks', 'SBI', 'HDFC', 'ICICI', 'Axis & More']
+      items: ['All Major Banks', 'SBI', 'HDFC', 'ICICI', 'Axis & More'],
     },
     {
       icon: Wallet,
       iconColor: 'text-orange-500',
       iconBg: 'bg-orange-50',
       title: 'Digital Wallets',
-      items: ['Paytm Wallet', 'PhonePe Wallet', 'Amazon Pay', 'Mobikwik']
-    }
+      items: ['Paytm Wallet', 'PhonePe Wallet', 'Amazon Pay', 'Mobikwik'],
+    },
   ];
 
   const securityFeatures = [
@@ -40,7 +50,7 @@ export function PaymentHelp() {
     'PCI DSS compliant',
     'Secure payment gateway',
     'No card details stored',
-    'Two-factor authentication'
+    'Two-factor authentication',
   ];
 
   const commonIssues = [
@@ -48,13 +58,13 @@ export function PaymentHelp() {
     'Money deducted but no download? Contact support',
     'Card declined? Try another payment method',
     'UPI not working? Use net banking',
-    'Need invoice? Email us after purchase'
+    'Need invoice? Email us after purchase',
   ];
 
   return (
     <div className="min-h-screen bg-[#F8FAFF] flex flex-col">
       <ModernNavbar />
-      
+
       {/* Hero Header */}
       <div className="bg-gradient-to-r from-teal-400 to-blue-600 pt-32 pb-20 text-white text-center px-4">
         <div className="container mx-auto max-w-4xl">
@@ -62,8 +72,10 @@ export function PaymentHelp() {
             <CreditCard className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Payment Help</h1>
-          <p className="text-lg md:text-xl text-white/90 mb-10">Safe, secure, and convenient payment options for everyone</p>
-          
+          <p className="text-lg md:text-xl text-white/90 mb-10">
+            Safe, secure, and convenient payment options for everyone
+          </p>
+
           <div className="flex flex-wrap justify-center gap-4">
             <div className="bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full border border-white/30 flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-yellow-300" fill="currentColor" />
@@ -84,13 +96,20 @@ export function PaymentHelp() {
       <main className="flex-grow container mx-auto px-4 py-16 max-w-6xl">
         {/* Accepted Payment Methods */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-center mb-10 text-slate-900">Accepted Payment Methods</h2>
+          <h2 className="text-2xl font-bold text-center mb-10 text-slate-900">
+            Accepted Payment Methods
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {paymentMethods.map((method, idx) => {
               const Icon = method.icon;
               return (
-                <div key={idx} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                  <div className={`w-12 h-12 rounded-xl ${method.iconBg} flex items-center justify-center mb-4`}>
+                <div
+                  key={idx}
+                  className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+                >
+                  <div
+                    className={`w-12 h-12 rounded-xl ${method.iconBg} flex items-center justify-center mb-4`}
+                  >
                     <Icon className={`h-6 w-6 ${method.iconColor}`} />
                   </div>
                   <h3 className="font-bold text-lg mb-4 text-slate-900">{method.title}</h3>
@@ -148,7 +167,9 @@ export function PaymentHelp() {
         {/* Assistance Footer */}
         <div className="bg-blue-50/50 rounded-3xl p-10 text-center border border-blue-100">
           <h3 className="text-xl font-bold text-slate-900 mb-2">Need Payment Assistance?</h3>
-          <p className="text-slate-500 mb-6">Our support team is available 24/7 to help with payment issues</p>
+          <p className="text-slate-500 mb-6">
+            Our support team is available 24/7 to help with payment issues
+          </p>
           <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">
             <Button className="bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-lg h-11 px-8 font-medium">
               Contact Support on WhatsApp

@@ -31,7 +31,7 @@ export function AdminUsers() {
 
   const fetchUsers = async () => {
     setLoading(true);
-    
+
     // Fetch profiles
     const { data: profiles, error } = await supabase
       .from('profiles')
@@ -45,19 +45,18 @@ export function AdminUsers() {
     }
 
     // Fetch purchase counts
-    const { data: purchases } = await supabase
-      .from('purchases')
-      .select('user_id');
+    const { data: purchases } = await supabase.from('purchases').select('user_id');
 
     const purchaseCounts: Record<string, number> = {};
-    purchases?.forEach(p => {
+    purchases?.forEach((p) => {
       purchaseCounts[p.user_id] = (purchaseCounts[p.user_id] || 0) + 1;
     });
 
-    const usersWithCounts = profiles?.map(u => ({
-      ...u,
-      purchase_count: purchaseCounts[u.id] || 0
-    })) || [];
+    const usersWithCounts =
+      profiles?.map((u) => ({
+        ...u,
+        purchase_count: purchaseCounts[u.id] || 0,
+      })) || [];
 
     setUsers(usersWithCounts);
     setLoading(false);
@@ -79,13 +78,15 @@ export function AdminUsers() {
 
   const viewUserDetails = async (user: UserProfile) => {
     setSelectedUser(user);
-    
+
     const { data } = await supabase
       .from('purchases')
-      .select(`
+      .select(
+        `
         id, price, status, purchased_at,
         content_items:content_item_id(title)
-      `)
+      `,
+      )
       .eq('user_id', user.id)
       .order('purchased_at', { ascending: false })
       .limit(10);
@@ -93,9 +94,10 @@ export function AdminUsers() {
     setUserPurchases(data || []);
   };
 
-  const filteredUsers = users.filter((u) => 
-    u.name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase())
+  const filteredUsers = users.filter(
+    (u) =>
+      u.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -134,16 +136,26 @@ export function AdminUsers() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={6} className="p-8 text-center text-slate-500">Loading...</td></tr>
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-500">
+                      Loading...
+                    </td>
+                  </tr>
                 ) : filteredUsers.length === 0 ? (
-                  <tr><td colSpan={6} className="p-8 text-center text-slate-500">No users found</td></tr>
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-500">
+                      No users found
+                    </td>
+                  </tr>
                 ) : (
                   filteredUsers.map((user) => (
                     <tr key={user.id} className="border-b hover:bg-slate-50">
                       <td className="p-4 font-medium text-slate-900">{user.name || '-'}</td>
                       <td className="p-4 text-slate-600">{user.email}</td>
                       <td className="p-4 text-slate-600">{user.purchase_count}</td>
-                      <td className="p-4 text-slate-600">{format(new Date(user.created_at), 'MMM d, yyyy')}</td>
+                      <td className="p-4 text-slate-600">
+                        {format(new Date(user.created_at), 'MMM d, yyyy')}
+                      </td>
                       <td className="p-4">
                         <Switch
                           checked={user.is_blocked}
@@ -200,7 +212,10 @@ export function AdminUsers() {
                 ) : (
                   <div className="space-y-2">
                     {userPurchases.map((p) => (
-                      <div key={p.id} className="flex justify-between text-sm p-2 bg-slate-50 rounded">
+                      <div
+                        key={p.id}
+                        className="flex justify-between text-sm p-2 bg-slate-50 rounded"
+                      >
                         <span>{p.content_items?.title || 'Unknown'}</span>
                         <span className="font-medium">₹{p.price}</span>
                       </div>

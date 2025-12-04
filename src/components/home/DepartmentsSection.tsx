@@ -8,29 +8,29 @@ export function DepartmentsSection() {
       icon: Brain,
       title: 'AIML',
       subtitle: 'Artificial Intelligence & Machine Learning',
-      color: '#2F6FED'
+      color: '#2F6FED',
     },
     {
       id: 'computer',
       icon: Monitor,
       title: 'Computer Engineering',
       subtitle: 'Computer Engineering',
-      color: '#2F6FED'
+      color: '#2F6FED',
     },
     {
       id: 'mechanical',
       icon: Cog,
       title: 'Mechanical Engineering',
       subtitle: 'Mechanical Engineering',
-      color: '#35C2A0'
+      color: '#35C2A0',
     },
     {
       id: 'civil',
       icon: Building2,
       title: 'Civil Engineering',
       subtitle: 'Civil Engineering',
-      color: '#35C2A0'
-    }
+      color: '#35C2A0',
+    },
   ];
 
   return (
@@ -55,7 +55,7 @@ export function DepartmentsSection() {
                 background: '#F8FAFF',
                 border: '1px solid rgba(0, 0, 0, 0.06)',
                 animationDelay: `${idx * 100}ms`,
-                animationFillMode: 'backwards'
+                animationFillMode: 'backwards',
               }}
             >
               {/* Icon */}
@@ -68,7 +68,7 @@ export function DepartmentsSection() {
                     width: '32px',
                     height: '32px',
                     color: dept.color,
-                    strokeWidth: '2px'
+                    strokeWidth: '2px',
                   }}
                 />
               </div>
@@ -82,10 +82,7 @@ export function DepartmentsSection() {
               </h3>
 
               {/* Subtitle */}
-              <p
-                className="text-center text-sm"
-                style={{ color: '#4A4A4A', lineHeight: 1.5 }}
-              >
+              <p className="text-center text-sm" style={{ color: '#4A4A4A', lineHeight: 1.5 }}>
                 {dept.subtitle}
               </p>
             </Link>

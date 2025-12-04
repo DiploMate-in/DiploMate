@@ -37,9 +37,17 @@ export function ResourceTable({ data, loading, onEdit, onDelete }: ResourceTable
         </thead>
         <tbody>
           {loading ? (
-            <tr><td colSpan={7} className="p-8 text-center text-slate-500">Loading...</td></tr>
+            <tr>
+              <td colSpan={7} className="p-8 text-center text-slate-500">
+                Loading...
+              </td>
+            </tr>
           ) : data.length === 0 ? (
-            <tr><td colSpan={7} className="p-8 text-center text-slate-500">No content found</td></tr>
+            <tr>
+              <td colSpan={7} className="p-8 text-center text-slate-500">
+                No content found
+              </td>
+            </tr>
           ) : (
             data.map((item) => (
               <tr key={item.id} className="border-b hover:bg-slate-50">
@@ -48,25 +56,27 @@ export function ResourceTable({ data, loading, onEdit, onDelete }: ResourceTable
                 <td className="p-4 text-slate-600">{item.semesters?.name || '-'}</td>
                 <td className="p-4 text-slate-600">₹{item.price}</td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    item.is_published ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      item.is_published
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-slate-100 text-slate-600'
+                    }`}
+                  >
                     {item.is_published ? 'Published' : 'Draft'}
                   </span>
                 </td>
-                <td className="p-4 text-slate-600">{format(new Date(item.created_at), 'MMM d, yyyy')}</td>
+                <td className="p-4 text-slate-600">
+                  {format(new Date(item.created_at), 'MMM d, yyyy')}
+                </td>
                 <td className="p-4 text-right">
                   <div className="flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => onEdit(item)}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(item)}>
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="text-red-600"
                       onClick={() => onDelete(item.id)}
                     >

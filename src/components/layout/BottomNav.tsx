@@ -21,18 +21,18 @@ export function BottomNav() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
-          
+
           return (
             <Link
               key={item.href}
               to={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[60px] relative transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground"
+                'flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[60px] relative transition-colors',
+                isActive ? 'text-primary' : 'text-muted-foreground',
               )}
             >
               <div className="relative">
-                <Icon className={cn("h-5 w-5", isActive && "stroke-[2.5px]")} />
+                <Icon className={cn('h-5 w-5', isActive && 'stroke-[2.5px]')} />
                 {item.badge && item.badge > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
                     {item.badge}

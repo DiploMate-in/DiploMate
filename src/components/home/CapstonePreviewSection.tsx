@@ -9,7 +9,7 @@ export function CapstonePreviewSection() {
       description: 'Full final-year capstone with code, documentation, and report.',
       department: 'AIML',
       image: 'https://images.unsplash.com/photo-1526378800651-c32d170fe6f8?w=600&q=80',
-      color: '#2F6FED'
+      color: '#2F6FED',
     },
     {
       id: '2',
@@ -17,7 +17,7 @@ export function CapstonePreviewSection() {
       description: 'Complete IoT solution with hardware integration and mobile app.',
       department: 'CO',
       image: 'https://images.unsplash.com/photo-1605387132052-357a341cc515?w=600&q=80',
-      color: '#35C2A0'
+      color: '#35C2A0',
     },
     {
       id: '3',
@@ -25,8 +25,8 @@ export function CapstonePreviewSection() {
       description: 'Advanced computer vision project with real-time detection capabilities.',
       department: 'AIML',
       image: 'https://images.unsplash.com/photo-1569693799105-4eb645d89aea?w=600&q=80',
-      color: '#2F6FED'
-    }
+      color: '#2F6FED',
+    },
   ];
 
   return (
@@ -55,7 +55,7 @@ export function CapstonePreviewSection() {
                 background: 'white',
                 border: '1px solid rgba(0, 0, 0, 0.05)',
                 animationDelay: `${idx * 100}ms`,
-                animationFillMode: 'backwards'
+                animationFillMode: 'backwards',
               }}
             >
               {/* Thumbnail Image */}
@@ -65,14 +65,14 @@ export function CapstonePreviewSection() {
                   alt={project.title}
                   className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
                 />
-                
+
                 {/* Badge */}
                 <div
                   className="absolute top-4 right-4 px-3 py-1.5 rounded-full backdrop-blur-md text-xs font-semibold tracking-wide"
                   style={{
                     background: 'rgba(255, 255, 255, 0.9)',
                     color: project.color,
-                    border: `1.5px solid ${project.color}30`
+                    border: `1.5px solid ${project.color}30`,
                   }}
                 >
                   CAPSTONE
@@ -93,12 +93,15 @@ export function CapstonePreviewSection() {
                 </p>
 
                 {/* Bottom Section */}
-                <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'rgba(0, 0, 0, 0.06)' }}>
+                <div
+                  className="flex items-center justify-between pt-4 border-t"
+                  style={{ borderColor: 'rgba(0, 0, 0, 0.06)' }}
+                >
                   <span
                     className="px-3 py-1.5 rounded-full text-xs font-semibold"
                     style={{
                       color: project.color,
-                      border: `1.5px solid ${project.color}40`
+                      border: `1.5px solid ${project.color}40`,
                     }}
                   >
                     {project.department}
@@ -120,7 +123,7 @@ export function CapstonePreviewSection() {
         {/* CTA Section */}
         <div className="text-center">
           <Link
-            to="/capstone-projects"
+            to="/projects/capstone"
             className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-200 hover:scale-105 mb-4 text-white btn-shadow-primary"
             style={{ background: '#2F6FED' }}
           >

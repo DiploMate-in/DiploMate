@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Eye } from 'lucide-react';
 import { format } from 'date-fns';
@@ -51,7 +57,9 @@ export function AdminSupport() {
     }
   };
 
-  const filteredTickets = tickets.filter(t => filterStatus === 'all' || t.status === filterStatus);
+  const filteredTickets = tickets.filter(
+    (t) => filterStatus === 'all' || t.status === filterStatus,
+  );
 
   const statusColors: Record<string, string> = {
     open: 'bg-yellow-100 text-yellow-700',
@@ -91,20 +99,32 @@ export function AdminSupport() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={5} className="p-8 text-center text-slate-500">Loading...</td></tr>
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                      Loading...
+                    </td>
+                  </tr>
                 ) : filteredTickets.length === 0 ? (
-                  <tr><td colSpan={5} className="p-8 text-center text-slate-500">No tickets found</td></tr>
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                      No tickets found
+                    </td>
+                  </tr>
                 ) : (
                   filteredTickets.map((t) => (
                     <tr key={t.id} className="border-b hover:bg-slate-50">
                       <td className="p-4 font-medium text-slate-900">{t.subject}</td>
                       <td className="p-4 text-slate-600">{t.email}</td>
                       <td className="p-4">
-                        <span className={`px-2 py-1 rounded-full text-xs capitalize ${statusColors[t.status]}`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs capitalize ${statusColors[t.status]}`}
+                        >
                           {t.status}
                         </span>
                       </td>
-                      <td className="p-4 text-slate-600">{format(new Date(t.created_at), 'MMM d, yyyy')}</td>
+                      <td className="p-4 text-slate-600">
+                        {format(new Date(t.created_at), 'MMM d, yyyy')}
+                      </td>
                       <td className="p-4 text-right">
                         <Button variant="ghost" size="sm" onClick={() => setSelectedTicket(t)}>
                           <Eye className="w-4 h-4" />
@@ -136,7 +156,9 @@ export function AdminSupport() {
               </div>
               <div>
                 <p className="text-sm text-slate-500">Message</p>
-                <p className="text-sm bg-slate-50 p-3 rounded-lg whitespace-pre-wrap">{selectedTicket.message}</p>
+                <p className="text-sm bg-slate-50 p-3 rounded-lg whitespace-pre-wrap">
+                  {selectedTicket.message}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-slate-500 mb-2">Update Status</p>

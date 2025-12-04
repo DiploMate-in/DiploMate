@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Loader2, ZoomIn, ZoomOut } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, Loader2, ZoomIn, ZoomOut } from 'lucide-react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -39,7 +39,7 @@ export const SecurePDFViewer = ({ fileUrl, watermarkText }: SecurePDFViewerProps
 
   // Generate watermark pattern
   const WatermarkOverlay = () => (
-    <div 
+    <div
       className="absolute inset-0 pointer-events-none z-50 overflow-hidden select-none flex flex-wrap content-center justify-center gap-12 opacity-20"
       style={{ transform: 'rotate(-45deg) scale(1.5)' }}
     >
@@ -56,50 +56,32 @@ export const SecurePDFViewer = ({ fileUrl, watermarkText }: SecurePDFViewerProps
       {/* Controls */}
       <div className="sticky top-0 z-20 flex items-center justify-between w-full max-w-3xl mb-4 bg-white p-2 rounded-md shadow-sm">
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={previousPage}
-            disabled={pageNumber <= 1}
-          >
+          <Button variant="outline" size="sm" onClick={previousPage} disabled={pageNumber <= 1}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-sm font-medium">
             Page {pageNumber} of {numPages || '--'}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={nextPage}
-            disabled={pageNumber >= numPages}
-          >
+          <Button variant="outline" size="sm" onClick={nextPage} disabled={pageNumber >= numPages}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setScale(s => Math.max(0.5, s - 0.1))}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}>
             <ZoomOut className="h-4 w-4" />
           </Button>
           <span className="text-xs text-muted-foreground w-12 text-center">
             {Math.round(scale * 100)}%
           </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setScale(s => Math.min(2.0, s + 0.1))}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.min(2.0, s + 0.1))}>
             <ZoomIn className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
       {/* Document Viewer */}
-      <div 
+      <div
         className="relative w-full max-w-3xl bg-white shadow-lg min-h-[calc(100vh-150px)] flex justify-center overflow-hidden"
         onContextMenu={(e) => e.preventDefault()} // Disable right click
       >
@@ -125,8 +107,8 @@ export const SecurePDFViewer = ({ fileUrl, watermarkText }: SecurePDFViewerProps
           className="flex justify-center"
         >
           <div className="relative">
-            <Page 
-              pageNumber={pageNumber} 
+            <Page
+              pageNumber={pageNumber}
               scale={scale}
               renderTextLayer={false}
               renderAnnotationLayer={false}
@@ -136,7 +118,7 @@ export const SecurePDFViewer = ({ fileUrl, watermarkText }: SecurePDFViewerProps
           </div>
         </Document>
       </div>
-      
+
       <p className="text-xs text-muted-foreground mt-4 text-center max-w-md">
         Protected Document. ID: {watermarkText}. Unauthorized distribution is prohibited.
       </p>

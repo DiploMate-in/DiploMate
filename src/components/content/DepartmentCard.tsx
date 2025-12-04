@@ -8,22 +8,19 @@ interface DepartmentCardProps {
 }
 
 export function DepartmentCard({ department }: DepartmentCardProps) {
-  const itemCount = contentItems.filter(item => item.departmentId === department.id).length;
+  const itemCount = contentItems.filter((item) => item.departmentId === department.id).length;
 
   return (
-    <Link 
-      to={`/browse?department=${department.id}`}
-      className="group block"
-    >
-      <div 
+    <Link to={`/browse?department=${department.id}`} className="group block">
+      <div
         className="relative p-6 rounded-2xl border overflow-hidden card-interactive"
-        style={{ 
+        style={{
           background: `linear-gradient(135deg, ${department.color}08 0%, ${department.color}15 100%)`,
           borderColor: `${department.color}20`,
         }}
       >
         {/* Icon */}
-        <div 
+        <div
           className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 transition-transform duration-300 group-hover:scale-110"
           style={{ background: `${department.color}15` }}
         >
@@ -35,7 +32,7 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
         <p className="text-sm text-muted-foreground mb-4">{itemCount} items available</p>
 
         {/* Arrow */}
-        <div 
+        <div
           className="flex items-center gap-1 text-sm font-medium transition-all group-hover:gap-2"
           style={{ color: department.color }}
         >
@@ -44,7 +41,7 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
         </div>
 
         {/* Decorative circle */}
-        <div 
+        <div
           className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-10 transition-transform duration-300 group-hover:scale-125"
           style={{ background: department.color }}
         />
