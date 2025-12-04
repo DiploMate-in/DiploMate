@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 interface ContentCardProps {
   item: ContentItem;
   className?: string;
+  departmentCode?: string;
 }
 
 const typeIcons = {
@@ -24,22 +25,35 @@ const typeLabels = {
   capstone: 'Capstone',
 };
 
-export function ContentCard({ item, className }: ContentCardProps) {
+export function ContentCard({ item, className, departmentCode }: ContentCardProps) {
   const { isInWishlist, toggleWishlist, isAuthenticated, getPurchasedItem } = useApp();
+  // Fallback to mock data if departmentCode is not provided (for backward compatibility or if not fetched yet)
   const department = departments.find(d => d.id === item.departmentId);
+  const displayCode = departmentCode || department?.code;
+  
   const Icon = typeIcons[item.type];
   const isPurchased = !!getPurchasedItem(item.id);
   const inWishlist = isInWishlist(item.id);
+
+  const isGoogleDoc = (url: string) => {
+    return url && (url.includes('docs.google.com') || url.includes('drive.google.com'));
+  };
 
   return (
     <div className={cn("group bg-card rounded-xl border overflow-hidden card-interactive", className)}>
       {/* Image */}
       <div className="relative aspect-[4/3] bg-secondary overflow-hidden">
-        <img
-          src={item.previewImages[0]}
-          alt={item.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        {isGoogleDoc(item.previewImages[0]) ? (
+          <div className="w-full h-full flex items-center justify-center bg-muted">
+            <FileText className="h-12 w-12 text-muted-foreground" />
+          </div>
+        ) : (
+          <img
+            src={item.previewImages[0]}
+            alt={item.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        )}
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex gap-2">
@@ -83,7 +97,7 @@ export function ContentCard({ item, className }: ContentCardProps) {
             variant={item.departmentId as any} 
             className="text-xs"
           >
-            {department?.code}
+            {displayCode}
           </Badge>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />

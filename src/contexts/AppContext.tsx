@@ -8,6 +8,7 @@ type AppContextType = {
   session: Session | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isDataLoading: boolean;
   wishlist: string[];
   purchases: Purchase[];
   login: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -26,45 +27,56 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
   const isAuthenticated = !!session;
 
   // Fetch user's wishlist and purchases
-  const refreshUserData = async () => {
-    if (!session?.user) {
+  const refreshUserData = async (userId?: string) => {
+    const currentUserId = userId || session?.user?.id;
+
+    if (!currentUserId) {
       setWishlist([]);
       setPurchases([]);
+      setIsDataLoading(false);
       return;
     }
 
-    // Fetch wishlist
-    const { data: wishlistData } = await supabase
-      .from('wishlist')
-      .select('content_item_id')
-      .eq('user_id', session.user.id);
+    setIsDataLoading(true);
+    try {
+      // Fetch wishlist
+      const { data: wishlistData } = await supabase
+        .from('wishlist')
+        .select('content_item_id')
+        .eq('user_id', currentUserId);
 
-    if (wishlistData) {
-      setWishlist(wishlistData.map(w => w.content_item_id));
-    }
+      if (wishlistData) {
+        setWishlist(wishlistData.map(w => w.content_item_id));
+      }
 
-    // Fetch purchases
-    const { data: purchasesData } = await supabase
-      .from('purchases')
-      .select('*')
-      .eq('user_id', session.user.id);
+      // Fetch purchases
+      const { data: purchasesData } = await supabase
+        .from('purchases')
+        .select('*')
+        .eq('user_id', currentUserId);
 
-    if (purchasesData) {
-      setPurchases(purchasesData.map(p => ({
-        id: p.id,
-        userId: p.user_id,
-        contentItemId: p.content_item_id,
-        price: p.price,
-        status: p.status as 'pending' | 'completed' | 'refunded',
-        purchasedAt: p.purchased_at,
-        downloadsRemaining: p.downloads_remaining,
-      })));
+      if (purchasesData) {
+        setPurchases(purchasesData.map(p => ({
+          id: p.id,
+          userId: p.user_id,
+          contentItemId: p.content_item_id,
+          price: p.price,
+          status: p.status as 'pending' | 'completed' | 'refunded',
+          purchasedAt: p.purchased_at,
+          downloadsRemaining: p.downloads_remaining,
+        })));
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setIsDataLoading(false);
     }
   };
 
@@ -79,7 +91,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         // Defer data fetching to avoid deadlock
         if (newSession?.user) {
           setTimeout(() => {
-            refreshUserData();
+            refreshUserData(newSession.user.id);
           }, 0);
         } else {
           setWishlist([]);
@@ -95,7 +107,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
 
       if (existingSession?.user) {
-        refreshUserData();
+        refreshUserData(existingSession.user.id);
       }
     });
 
@@ -206,6 +218,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       session,
       isAuthenticated,
       isLoading,
+      isDataLoading,
       wishlist,
       purchases,
       login,

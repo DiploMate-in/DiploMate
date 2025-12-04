@@ -13,6 +13,8 @@ interface Subject {
   name: string;
   code: string;
   scheme: string;
+  bundle_price?: number;
+  content_items?: { price: number }[];
 }
 
 interface Department {
@@ -142,10 +144,10 @@ export default function StudyMaterialPage() {
     const fetchData = async () => {
       if (!department || !selectedSemester) return;
 
-      // Fetch subjects
+      // Fetch subjects with content prices for bundle calculation
       const subjectsPromise = supabase
         .from('subjects')
-        .select('id, name, code, scheme')
+        .select('id, name, code, scheme, bundle_price, content_items(price)')
         .eq('department_id', department.id)
         .eq('semester_id', selectedSemester)
         .eq('scheme', selectedScheme)
@@ -364,7 +366,12 @@ export default function StudyMaterialPage() {
           </div>
         ) : subjects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {subjects.map((subject) => (
+            {subjects.map((subject) => {
+              const totalValue = subject.content_items?.reduce((sum, item) => sum + (item.price || 0), 0) || 0;
+              const bundlePrice = subject.bundle_price;
+              const hasBundle = bundlePrice !== undefined && bundlePrice !== null && bundlePrice < totalValue;
+
+              return (
               <Link 
                 key={subject.id}
                 to={`/department/${deptCode}/${materialType}/${subject.id}`}
@@ -388,12 +395,33 @@ export default function StudyMaterialPage() {
                     Access all {materialInfo.title.toLowerCase()} for {subject.name}.
                   </p>
 
-                  <div className="flex items-center text-sm font-medium text-primary">
-                    View Materials <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  {hasBundle && (
+                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-900/50">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs text-muted-foreground">Total Value</span>
+                        <span className="text-xs font-medium line-through text-muted-foreground">₹{totalValue}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-bold text-green-700 dark:text-green-400">Bundle Price</span>
+                        <span className="text-sm font-bold text-green-700 dark:text-green-400">₹{bundlePrice}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center text-sm font-medium text-primary">
+                      View Materials <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                    {hasBundle && (
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-8">
+                        Buy Bundle
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Link>
-            ))}
+            );
+            })}
           </div>
         ) : null}
       </div>

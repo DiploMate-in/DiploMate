@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, ChevronRight, BookOpen, Code, Wrench, Building2, Lightbulb, Trophy, Zap, User, HelpCircle, MessageCircle, Brain, Monitor, Cog, LogOut } from 'lucide-react';
+import { Menu, X, ChevronDown, ChevronRight, BookOpen, Code, Wrench, Building2, Lightbulb, Trophy, Zap, User, HelpCircle, MessageCircle, Brain, Monitor, Cog, LogOut, Home } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 
 export function ModernNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProjectsDropdownOpen, setIsProjectsDropdownOpen] = useState(false);
   const [isDepartmentsDropdownOpen, setIsDepartmentsDropdownOpen] = useState(false);
-  const [mobileNotesExpanded, setMobileNotesExpanded] = useState(false);
+  
+  // Mobile Dropdown States
   const [mobileProjectsExpanded, setMobileProjectsExpanded] = useState(false);
-  const [mobileSupportExpanded, setMobileSupportExpanded] = useState(false);
+  const [mobileDepartmentsExpanded, setMobileDepartmentsExpanded] = useState(false);
   
   const location = useLocation();
   const { isAuthenticated, logout, user } = useApp();
@@ -25,14 +26,13 @@ export function ModernNavbar() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
-    setMobileNotesExpanded(false);
     setMobileProjectsExpanded(false);
-    setMobileSupportExpanded(false);
+    setMobileDepartmentsExpanded(false);
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-3 md:py-4 glass">
-      <div className="max-w-7xl mx-auto flex items-center justify-between relative">
+    <nav className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-3 md:py-4 glass bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <div className="max-w-7xl mx-auto flex items-center justify-between relative z-50">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group" onClick={closeMobileMenu}>
           <img 
@@ -46,8 +46,8 @@ export function ModernNavbar() {
           </div>
         </Link>
 
-        {/* Desktop Navigation - Centered */}
-        <div className="hidden lg:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
+        {/* Desktop Navigation - Centered (> 768px) */}
+        <div className="hidden md:flex items-center gap-6 lg:gap-8 absolute left-1/2 transform -translate-x-1/2">
           <Link
             to="/"
             className="relative py-2 transition-colors duration-200"
@@ -200,8 +200,8 @@ export function ModernNavbar() {
           </Link>
         </div>
 
-        {/* Right Section */}
-        <div className="hidden lg:flex items-center gap-3">
+        {/* Right Section (Desktop) */}
+        <div className="hidden md:flex items-center gap-3">
           {isAuthenticated ? (
             <>
               <Link
@@ -233,9 +233,9 @@ export function ModernNavbar() {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button (< 768px) */}
         <button
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors z-50"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           style={{ color: '#2F6FED' }}
         >
@@ -243,35 +243,77 @@ export function ModernNavbar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[68px] bg-white z-40 overflow-y-auto animate-slide-down">
-          <div className="px-5 py-6">
-            {/* Notes Section */}
-            <div className="mb-2">
+        <div className="md:hidden fixed inset-0 bg-white z-40 overflow-y-auto animate-slide-down h-[100dvh]">
+          <div className="pt-24 px-5 pb-6 flex flex-col gap-2">
+            
+            {/* Home Link */}
+            <Link
+              to="/"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+            >
+              <Home className="w-5 h-5 text-gray-500" />
+              <span className="text-base font-semibold text-gray-800">Home</span>
+            </Link>
+
+            {/* Projects Section */}
+            <div className="rounded-xl overflow-hidden">
               <button
-                onClick={() => setMobileNotesExpanded(!mobileNotesExpanded)}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200"
+                onClick={() => setMobileProjectsExpanded(!mobileProjectsExpanded)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
                 style={{
-                  background: mobileNotesExpanded ? '#F8FAFF' : 'transparent',
-                  border: `1px solid ${mobileNotesExpanded ? 'rgba(47, 111, 237, 0.12)' : 'transparent'}`
+                  background: mobileProjectsExpanded ? '#F8FAFF' : 'transparent',
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <BookOpen style={{ width: '20px', height: '20px', color: '#2F6FED' }} />
-                  <span className="text-base font-semibold" style={{ color: '#1B1B1B' }}>Notes</span>
+                  <Lightbulb className="w-5 h-5 text-purple-600" />
+                  <span className="text-base font-semibold text-gray-800">Projects</span>
                 </div>
                 <ChevronDown 
-                  className="transition-transform duration-200"
-                  style={{ 
-                    width: '20px', height: '20px', color: '#6B7280',
-                    transform: mobileNotesExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
-                  }} 
+                  className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${mobileProjectsExpanded ? 'rotate-180' : ''}`}
                 />
               </button>
               
-              {mobileNotesExpanded && (
-                <div className="mt-2 ml-4 pl-6 border-l-2" style={{ borderColor: '#E8EBF0' }}>
+              {mobileProjectsExpanded && (
+                <div className="bg-gray-50/50 px-4 py-2 space-y-1">
+                  <Link to="/microprojects" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-all">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                    Microprojects
+                  </Link>
+                  <Link to="/capstone-projects" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-all">
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    Capstone Projects
+                  </Link>
+                  <Link to="/custom-build" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-blue-600 font-medium hover:bg-white hover:shadow-sm transition-all">
+                    <Zap className="w-4 h-4 fill-blue-600" />
+                    Custom Build Request
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Departments Section */}
+            <div className="rounded-xl overflow-hidden">
+              <button
+                onClick={() => setMobileDepartmentsExpanded(!mobileDepartmentsExpanded)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+                style={{
+                  background: mobileDepartmentsExpanded ? '#F8FAFF' : 'transparent',
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-5 h-5 text-blue-600" />
+                  <span className="text-base font-semibold text-gray-800">Departments</span>
+                </div>
+                <ChevronDown 
+                  className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${mobileDepartmentsExpanded ? 'rotate-180' : ''}`}
+                />
+              </button>
+              
+              {mobileDepartmentsExpanded && (
+                <div className="bg-gray-50/50 px-4 py-2 space-y-1">
                   {departments.map((dept) => {
                     const Icon = dept.icon;
                     return (
@@ -279,136 +321,68 @@ export function ModernNavbar() {
                         key={dept.id}
                         to={`/department/${dept.id}`}
                         onClick={closeMobileMenu}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors active:bg-[#F8FAFF]"
-                        style={{ fontSize: '15px', fontWeight: 500, color: '#1B1B1B' }}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-white hover:shadow-sm transition-all"
                       >
-                        <Icon style={{ width: '18px', height: '18px', color: dept.color }} />
-                        {dept.name} Notes
+                        <Icon style={{ width: '16px', height: '16px', color: dept.color }} />
+                        {dept.name}
                       </Link>
                     );
                   })}
-                  <Link
-                    to="/browse"
-                    onClick={closeMobileMenu}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg mt-1"
-                    style={{ fontSize: '15px', fontWeight: 500, color: '#2F6FED' }}
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                    All Notes
-                  </Link>
                 </div>
               )}
             </div>
 
-            {/* Projects Section */}
-            <div className="mb-2">
-              <button
-                onClick={() => setMobileProjectsExpanded(!mobileProjectsExpanded)}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200"
-                style={{
-                  background: mobileProjectsExpanded ? '#F8FAFF' : 'transparent',
-                  border: `1px solid ${mobileProjectsExpanded ? 'rgba(47, 111, 237, 0.12)' : 'transparent'}`
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  <Lightbulb style={{ width: '20px', height: '20px', color: '#9333EA' }} />
-                  <span className="text-base font-semibold" style={{ color: '#1B1B1B' }}>Projects</span>
-                </div>
-                <ChevronDown 
-                  className="transition-transform duration-200"
-                  style={{ 
-                    width: '20px', height: '20px', color: '#6B7280',
-                    transform: mobileProjectsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
-                  }} 
-                />
-              </button>
-              
-              {mobileProjectsExpanded && (
-                <div className="mt-2 ml-4 pl-6 border-l-2" style={{ borderColor: '#E8EBF0' }}>
-                  <Link to="/microprojects" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ fontSize: '15px', fontWeight: 500, color: '#1B1B1B' }}>
-                    <Lightbulb style={{ width: '18px', height: '18px', color: '#9333EA' }} />
-                    Microprojects
-                  </Link>
-                  <Link to="/capstone-projects" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ fontSize: '15px', fontWeight: 500, color: '#1B1B1B' }}>
-                    <Trophy style={{ width: '18px', height: '18px', color: '#F59E0B' }} />
-                    Capstone Projects
-                  </Link>
-                  <Link to="/custom-build" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg mt-1" style={{ fontSize: '15px', fontWeight: 600, color: '#2F6FED' }}>
-                    <Zap style={{ width: '18px', height: '18px', fill: '#2F6FED' }} />
-                    Custom Build Request
-                  </Link>
-                </div>
-              )}
-            </div>
+            {/* Support & FAQs */}
+            <Link
+              to="/support"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+            >
+              <MessageCircle className="w-5 h-5 text-red-500" />
+              <span className="text-base font-semibold text-gray-800">Support</span>
+            </Link>
 
-            {/* Support Section */}
-            <div className="mb-2">
-              <button
-                onClick={() => setMobileSupportExpanded(!mobileSupportExpanded)}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200"
-                style={{
-                  background: mobileSupportExpanded ? '#F8FAFF' : 'transparent',
-                  border: `1px solid ${mobileSupportExpanded ? 'rgba(47, 111, 237, 0.12)' : 'transparent'}`
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  <MessageCircle style={{ width: '20px', height: '20px', color: '#EF4444' }} />
-                  <span className="text-base font-semibold" style={{ color: '#1B1B1B' }}>Support</span>
-                </div>
-                <ChevronDown 
-                  className="transition-transform duration-200"
-                  style={{ 
-                    width: '20px', height: '20px', color: '#6B7280',
-                    transform: mobileSupportExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
-                  }} 
-                />
-              </button>
-              
-              {mobileSupportExpanded && (
-                <div className="mt-2 ml-4 pl-6 border-l-2" style={{ borderColor: '#E8EBF0' }}>
-                  <Link to="/faqs" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ fontSize: '15px', fontWeight: 500, color: '#1B1B1B' }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: '#6B7280' }} />
-                    FAQs
-                  </Link>
-                  <Link to="/support" onClick={closeMobileMenu} className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ fontSize: '15px', fontWeight: 500, color: '#1B1B1B' }}>
-                    <ChevronRight className="w-4 h-4" style={{ color: '#6B7280' }} />
-                    Contact Support
-                  </Link>
-                </div>
-              )}
-            </div>
+            <Link
+              to="/faqs"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-gray-50"
+            >
+              <HelpCircle className="w-5 h-5 text-green-500" />
+              <span className="text-base font-semibold text-gray-800">FAQs</span>
+            </Link>
 
             {/* Divider */}
-            <div className="h-px bg-gray-200 my-4" />
+            <div className="h-px bg-gray-100 my-2" />
 
-            {/* Login Button */}
+            {/* Auth Buttons */}
             {isAuthenticated ? (
-              <div className="space-y-2">
+              <div className="space-y-3 pt-2">
                 <Link
                   to="/dashboard"
                   onClick={closeMobileMenu}
-                  className="block px-4 py-4 rounded-xl text-center font-semibold gradient-primary text-white"
-                  style={{ boxShadow: '0 4px 16px rgba(47, 111, 237, 0.25)' }}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl font-semibold gradient-primary text-white shadow-lg shadow-blue-500/20"
                 >
-                  Dashboard
+                  <User className="w-5 h-5" />
+                  Go to Dashboard
                 </Link>
                 <button
                   onClick={() => { logout(); closeMobileMenu(); }}
-                  className="w-full px-4 py-3 rounded-xl text-center font-semibold border"
-                  style={{ color: '#EF4444', borderColor: '#EF4444' }}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl font-semibold border border-red-100 text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
                 >
+                  <LogOut className="w-5 h-5" />
                   Logout
                 </button>
               </div>
             ) : (
-              <Link
-                to="/login"
-                onClick={closeMobileMenu}
-                className="block px-4 py-4 rounded-xl text-center font-semibold gradient-primary text-white"
-                style={{ boxShadow: '0 4px 16px rgba(47, 111, 237, 0.25)' }}
-              >
-                Login / Sign Up
-              </Link>
+              <div className="pt-2">
+                <Link
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl font-semibold gradient-primary text-white shadow-lg shadow-blue-500/20"
+                >
+                  Login / Sign Up
+                </Link>
+              </div>
             )}
           </div>
         </div>
