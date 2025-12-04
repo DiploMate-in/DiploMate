@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Shield } from 'lucide-react';
 
+import { hasRole } from '@/services/roles';
+
 export function AdminLogin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -27,14 +29,9 @@ export function AdminLogin() {
       if (error) throw error;
 
       // Check if user has admin role
-      const { data: roleData, error: roleError } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', data.user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+      const isAdmin = await hasRole(data.user.id, 'admin');
 
-      if (roleError || !roleData) {
+      if (!isAdmin) {
         await supabase.auth.signOut();
         toast.error('Access denied. Admin privileges required.');
         return;

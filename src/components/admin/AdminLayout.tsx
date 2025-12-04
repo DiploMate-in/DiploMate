@@ -5,6 +5,8 @@ import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 import { Loader2 } from 'lucide-react';
 
+import { hasRole } from '@/services/roles';
+
 export function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,14 +24,9 @@ export function AdminLayout() {
       }
 
       // Check admin role
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', session.user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+      const isAdmin = await hasRole(session.user.id, 'admin');
 
-      if (!roleData) {
+      if (!isAdmin) {
         await supabase.auth.signOut();
         navigate('/admin/login');
         return;

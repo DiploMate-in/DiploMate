@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { ContentItem, Purchase } from '@/types';
+import { toast } from 'sonner';
 
 type AppContextType = {
   user: User | null;
@@ -18,7 +19,7 @@ type AppContextType = {
   isInWishlist: (itemId: string) => boolean;
   addPurchase: (item: ContentItem) => Promise<void>;
   getPurchasedItem: (itemId: string) => Purchase | undefined;
-  refreshUserData: () => Promise<void>;
+  refreshUserData: (userId?: string) => Promise<void>;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -30,86 +31,104 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
+  
+  // Ref to track the latest data fetch request to avoid race conditions
+  const latestFetchIdRef = useRef<number>(0);
 
-  const isAuthenticated = !!session;
+  const isAuthenticated = !!session?.user;
 
   // Fetch user's wishlist and purchases
   const refreshUserData = async (userId?: string) => {
     const currentUserId = userId || session?.user?.id;
+    const fetchId = ++latestFetchIdRef.current;
 
     if (!currentUserId) {
-      setWishlist([]);
-      setPurchases([]);
-      setIsDataLoading(false);
+      if (fetchId === latestFetchIdRef.current) {
+        setWishlist([]);
+        setPurchases([]);
+        setIsDataLoading(false);
+      }
       return;
     }
 
     setIsDataLoading(true);
     try {
       // Fetch wishlist
-      const { data: wishlistData } = await supabase
+      const { data: wishlistData, error: wishlistError } = await supabase
         .from('wishlist')
         .select('content_item_id')
         .eq('user_id', currentUserId);
 
-      if (wishlistData) {
-        setWishlist(wishlistData.map(w => w.content_item_id));
-      }
+      if (wishlistError) throw wishlistError;
 
       // Fetch purchases
-      const { data: purchasesData } = await supabase
+      const { data: purchasesData, error: purchasesError } = await supabase
         .from('purchases')
         .select('*')
         .eq('user_id', currentUserId);
 
-      if (purchasesData) {
-        setPurchases(purchasesData.map(p => ({
-          id: p.id,
-          userId: p.user_id,
-          contentItemId: p.content_item_id,
-          price: p.price,
-          status: p.status as 'pending' | 'completed' | 'refunded',
-          purchasedAt: p.purchased_at,
-          downloadsRemaining: p.downloads_remaining,
-        })));
+      if (purchasesError) throw purchasesError;
+
+      // Only update state if this is still the latest request
+      if (fetchId === latestFetchIdRef.current) {
+        if (wishlistData) {
+          setWishlist(wishlistData.map(w => w.content_item_id));
+        }
+
+        if (purchasesData) {
+          setPurchases(purchasesData.map(p => ({
+            id: p.id,
+            userId: p.user_id,
+            contentItemId: p.content_item_id,
+            price: p.price,
+            status: p.status as 'pending' | 'completed' | 'refunded',
+            purchasedAt: p.purchased_at,
+            downloadsRemaining: p.downloads_remaining,
+          })));
+        }
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+      if (fetchId === latestFetchIdRef.current) {
+        toast.error('Failed to load user data');
+      }
     } finally {
-      setIsDataLoading(false);
+      if (fetchId === latestFetchIdRef.current) {
+        setIsDataLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      setSession(initialSession);
+      setUser(initialSession?.user ?? null);
+      setIsLoading(false);
+      
+      if (initialSession?.user) {
+        refreshUserData(initialSession.user.id);
+      } else {
+        setIsDataLoading(false);
+      }
+    });
+
+    // Auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setIsLoading(false);
 
-        // Defer data fetching to avoid deadlock
         if (newSession?.user) {
-          setTimeout(() => {
-            refreshUserData(newSession.user.id);
-          }, 0);
+          refreshUserData(newSession.user.id);
         } else {
           setWishlist([]);
           setPurchases([]);
+          setIsDataLoading(false);
         }
       }
     );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
-      setSession(existingSession);
-      setUser(existingSession?.user ?? null);
-      setIsLoading(false);
-
-      if (existingSession?.user) {
-        refreshUserData(existingSession.user.id);
-      }
-    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -153,59 +172,84 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleWishlist = async (itemId: string) => {
-    if (!session?.user) return;
+    if (!session?.user) {
+      toast.error('Please login to manage your wishlist');
+      return;
+    }
 
     const inWishlist = wishlist.includes(itemId);
 
-    if (inWishlist) {
-      // Remove from wishlist
-      await supabase
-        .from('wishlist')
-        .delete()
-        .eq('user_id', session.user.id)
-        .eq('content_item_id', itemId);
+    try {
+      if (inWishlist) {
+        // Remove from wishlist
+        const { error } = await supabase
+          .from('wishlist')
+          .delete()
+          .eq('user_id', session.user.id)
+          .eq('content_item_id', itemId);
 
-      setWishlist(prev => prev.filter(id => id !== itemId));
-    } else {
-      // Add to wishlist
-      await supabase
-        .from('wishlist')
-        .insert({
-          user_id: session.user.id,
-          content_item_id: itemId,
-        });
+        if (error) throw error;
 
-      setWishlist(prev => [...prev, itemId]);
+        setWishlist(prev => prev.filter(id => id !== itemId));
+        toast.success('Removed from wishlist');
+      } else {
+        // Add to wishlist
+        const { error } = await supabase
+          .from('wishlist')
+          .insert({
+            user_id: session.user.id,
+            content_item_id: itemId,
+          });
+
+        if (error) throw error;
+
+        setWishlist(prev => [...prev, itemId]);
+        toast.success('Added to wishlist');
+      }
+    } catch (error) {
+      console.error('Error updating wishlist:', error);
+      toast.error('Failed to update wishlist');
     }
   };
 
   const isInWishlist = (itemId: string) => wishlist.includes(itemId);
 
   const addPurchase = async (item: ContentItem) => {
-    if (!session?.user) return;
+    if (!session?.user) {
+      toast.error('Please login to purchase items');
+      return;
+    }
 
-    const { data, error } = await supabase
-      .from('purchases')
-      .insert({
-        user_id: session.user.id,
-        content_item_id: item.id,
-        price: item.price,
-        downloads_remaining: item.downloadsAllowed,
-      })
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('purchases')
+        .insert({
+          user_id: session.user.id,
+          content_item_id: item.id,
+          price: item.price,
+          downloads_remaining: item.downloadsAllowed,
+        })
+        .select()
+        .single();
 
-    if (!error && data) {
-      const newPurchase: Purchase = {
-        id: data.id,
-        userId: data.user_id,
-        contentItemId: data.content_item_id,
-        price: data.price,
-        status: data.status as 'pending' | 'completed' | 'refunded',
-        purchasedAt: data.purchased_at,
-        downloadsRemaining: data.downloads_remaining,
-      };
-      setPurchases(prev => [...prev, newPurchase]);
+      if (error) throw error;
+
+      if (data) {
+        const newPurchase: Purchase = {
+          id: data.id,
+          userId: data.user_id,
+          contentItemId: data.content_item_id,
+          price: data.price,
+          status: data.status as 'pending' | 'completed' | 'refunded',
+          purchasedAt: data.purchased_at,
+          downloadsRemaining: data.downloads_remaining,
+        };
+        setPurchases(prev => [...prev, newPurchase]);
+        toast.success('Purchase successful!');
+      }
+    } catch (error) {
+      console.error('Error adding purchase:', error);
+      toast.error('Failed to process purchase');
     }
   };
 
