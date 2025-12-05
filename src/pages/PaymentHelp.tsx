@@ -170,7 +170,7 @@ export function PaymentHelp() {
           <p className="text-slate-500 mb-6">
             Our support team is available 24/7 to help with payment issues
           </p>
-          <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/918830217352" target="_blank" rel="noopener noreferrer">
             <Button className="bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-lg h-11 px-8 font-medium">
               Contact Support on WhatsApp
             </Button>

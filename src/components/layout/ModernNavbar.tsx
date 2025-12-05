@@ -22,6 +22,7 @@ import {
   Home,
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import { useSystemSetting } from '@/hooks/useSystemSetting';
 
 export function ModernNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -34,6 +35,7 @@ export function ModernNavbar() {
 
   const location = useLocation();
   const { isAuthenticated, logout, user } = useApp();
+  const { value: whatsappUrl } = useSystemSetting('whatsapp_group_link', '');
 
   const departments = [
     { id: 'aiml', name: 'AIML', icon: Brain, color: '#2F6FED' },
@@ -257,6 +259,19 @@ export function ModernNavbar() {
 
         {/* Right Section (Desktop) */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Community CTA */}
+          {whatsappUrl && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 font-bold text-sm mr-2 shadow-sm hover:shadow-md"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Community
+            </a>
+          )}
+
           {isAuthenticated ? (
             <>
               <Link
@@ -416,6 +431,20 @@ export function ModernNavbar() {
               <HelpCircle className="w-5 h-5 text-green-500" />
               <span className="text-base font-semibold text-gray-800">FAQs</span>
             </Link>
+
+            {/* Community CTA Mobile */}
+            {whatsappUrl && (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={closeMobileMenu}
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 bg-[#25D366]/10 text-[#075E54] hover:bg-[#25D366]/20 border border-[#25D366]/20"
+              >
+                <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                <span className="text-base font-bold">Join Community</span>
+              </a>
+            )}
 
             {/* Divider */}
             <div className="h-px bg-gray-100 my-2" />

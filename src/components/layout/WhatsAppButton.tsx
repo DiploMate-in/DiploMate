@@ -1,9 +1,13 @@
 import { MessageCircle } from 'lucide-react';
+import { useSystemSetting } from '@/hooks/useSystemSetting';
 
 export function WhatsAppButton() {
-  const whatsappNumber = '919876543210'; // Replace with actual number
-  const message = 'Hello DiploMate team! I need help with...';
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  // Fetch the WhatsApp URL from system settings.
+  // Default is empty string, which will cause the button to be hidden if not set in DB.
+  const { value: whatsappUrl, loading } = useSystemSetting('whatsapp_group_link', '');
+
+  // Don't show anything while loading or if no URL is configured
+  if (loading || !whatsappUrl) return null;
 
   return (
     <a

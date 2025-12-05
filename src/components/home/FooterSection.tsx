@@ -144,20 +144,20 @@ export function FooterSection() {
               </li>
               <li>
                 <a
-                  href="mailto:hello@diplomate.com"
+                  href="mailto:diplomate.helpdesk@gmail.com"
                   className="flex items-center gap-2 text-gray-600 hover:text-[#2F6FED] transition-colors"
                 >
                   <Mail size={18} />
-                  hello@diplomate.com
+                  diplomate.helpdesk@gmail.com
                 </a>
               </li>
               <li>
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+918830217352"
                   className="flex items-center gap-2 text-gray-600 hover:text-[#2F6FED] transition-colors"
                 >
                   <Phone size={18} />
-                  +91 98765 43210
+                  +91 88302 17352
                 </a>
               </li>
             </ul>

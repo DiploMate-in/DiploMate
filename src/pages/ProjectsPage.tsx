@@ -157,13 +157,13 @@ export default function ProjectsPage() {
 
               <Button size="lg" className="w-full md:w-auto" asChild>
                 <a
-                  href="https://wa.me/919999999999?text=Hello%20DiploMate%20team%2C%20I%20need%20a%20custom%20project"
+                  href="https://wa.me/918830217352?text=Hello%20DiploMate%20team%2C%20I%20need%20a%20custom%20project"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Contact on WhatsApp
                 </a>
-              </Button>
+              </Button>>
             </div>
           </div>
         </div>

@@ -15,10 +15,9 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 export function Support() {
-  const whatsappNumber = '919876543210';
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello DiploMate team! I need help with...')}`;
-
-  return (
+  const whatsappNumber = '918830217352';
+  const message = 'Hello DiploMate team! I need help with...';
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;  return (
     <div className="min-h-screen flex flex-col" style={{ background: '#F8FAFF' }}>
       <ModernNavbar />
 
@@ -68,8 +67,8 @@ export function Support() {
                 <Mail className="h-6 w-6 text-blue-600" />
               </div>
               <h3 className="font-bold text-lg mb-2">Email Support</h3>
-              <p className="text-slate-500 text-sm mb-6">hello@diplomate.com</p>
-              <a href="mailto:hello@diplomate.com" className="w-full">
+              <p className="text-slate-500 text-sm mb-6">diplomate.helpdesk@gmail.com</p>
+              <a href="mailto:diplomate.helpdesk@gmail.com" className="w-full">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full h-11 font-medium">
                   Send Email
                 </Button>
@@ -82,8 +81,8 @@ export function Support() {
                 <Phone className="h-6 w-6 text-teal-500" />
               </div>
               <h3 className="font-bold text-lg mb-2">Phone Support</h3>
-              <p className="text-slate-500 text-sm mb-6">+91 98765 43210</p>
-              <a href="tel:+919876543210" className="w-full">
+              <p className="text-slate-500 text-sm mb-6">+91 88302 17352</p>
+              <a href="tel:+918830217352" className="w-full">
                 <Button className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full h-11 font-medium">
                   Call Now
                 </Button>

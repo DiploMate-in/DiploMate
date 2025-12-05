@@ -22,6 +22,7 @@ interface Settings {
 
 export function AdminSettings() {
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [whatsappLink, setWhatsappLink] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -30,9 +31,41 @@ export function AdminSettings() {
   }, []);
 
   const fetchSettings = async () => {
-    const { data, error } = await supabase.from('settings').select('*').limit(1).maybeSingle();
+    // Fetch legacy settings (if they exist)
+    const { data: settingsData, error: settingsError } = await supabase
+      .from('settings')
+      .select('*')
+      .limit(1)
+      .maybeSingle();
 
-    if (!error && data) setSettings(data);
+    // Fetch new system settings
+    const { data: systemData, error: systemError } = await supabase
+      .from('system_settings')
+      .select('value')
+      .eq('key', 'whatsapp_group_link')
+      .maybeSingle();
+
+    if (settingsData) {
+      setSettings(settingsData);
+    } else {
+      // Initialize with defaults if settings table is missing or empty
+      setSettings({
+        id: 'default',
+        whatsapp_group_url: null,
+        whatsapp_popup_enabled: false,
+        whatsapp_popup_delay_seconds: 5,
+        global_download_limit: 3,
+        watermark_enabled: false,
+        terms_url: null,
+        privacy_url: null,
+        refund_policy_url: null,
+      });
+    }
+
+    if (!systemError && systemData) {
+      setWhatsappLink(systemData.value || '');
+    }
+    
     setLoading(false);
   };
 
@@ -40,22 +73,37 @@ export function AdminSettings() {
     if (!settings) return;
     setSaving(true);
 
-    const { error } = await supabase
-      .from('settings')
-      .update({
-        whatsapp_group_url: settings.whatsapp_group_url,
-        whatsapp_popup_enabled: settings.whatsapp_popup_enabled,
-        whatsapp_popup_delay_seconds: settings.whatsapp_popup_delay_seconds,
-        global_download_limit: settings.global_download_limit,
-        watermark_enabled: settings.watermark_enabled,
-        terms_url: settings.terms_url,
-        privacy_url: settings.privacy_url,
-        refund_policy_url: settings.refund_policy_url,
-      })
-      .eq('id', settings.id);
+    // Only try to update 'settings' table if we have a valid ID (not 'default')
+    // or if we want to support creating it. For now, we skip if it's the default mock.
+    if (settings.id !== 'default') {
+      const { error: settingsError } = await supabase
+        .from('settings')
+        .update({
+          whatsapp_popup_enabled: settings.whatsapp_popup_enabled,
+          whatsapp_popup_delay_seconds: settings.whatsapp_popup_delay_seconds,
+          global_download_limit: settings.global_download_limit,
+          watermark_enabled: settings.watermark_enabled,
+          terms_url: settings.terms_url,
+          privacy_url: settings.privacy_url,
+          refund_policy_url: settings.refund_policy_url,
+        })
+        .eq('id', settings.id);
+        
+      if (settingsError) console.error('Error saving settings:', settingsError);
+    }
 
-    if (error) {
-      toast.error('Failed to save settings');
+    // Save system_settings (WhatsApp Link)
+    const { error: systemError } = await supabase
+      .from('system_settings')
+      .upsert({ 
+        key: 'whatsapp_group_link', 
+        value: whatsappLink,
+        description: 'Global WhatsApp Group Invite Link'
+      }, { onConflict: 'key' });
+
+    if (systemError) {
+      toast.error('Failed to save WhatsApp link');
+      console.error(systemError);
     } else {
       toast.success('Settings saved successfully');
     }
@@ -94,8 +142,8 @@ export function AdminSettings() {
           <div className="space-y-2">
             <Label>WhatsApp Group URL</Label>
             <Input
-              value={settings.whatsapp_group_url || ''}
-              onChange={(e) => setSettings({ ...settings, whatsapp_group_url: e.target.value })}
+              value={whatsappLink}
+              onChange={(e) => setWhatsappLink(e.target.value)}
               placeholder="https://chat.whatsapp.com/..."
             />
           </div>

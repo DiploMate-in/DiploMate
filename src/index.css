@@ -297,4 +297,56 @@
   .stagger-4 {
     animation-delay: 400ms;
   }
+
+  /* Hero background blobs - premium animated effect */
+  .hero-blob {
+    width: 90rem;
+    height: auto;
+    transform-origin: center;
+    animation: blobMove 20s ease-in-out infinite alternate;
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+  }
+
+  .hero-blob-2 {
+    width: 50rem;
+    height: auto;
+    transform-origin: center;
+    animation: blobMoveAlt 24s ease-in-out infinite alternate-reverse;
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+  }
+
+  @keyframes blobMove {
+    0% {
+      transform: translate3d(-10%, 0, 0) scale(1);
+      opacity: 0.9;
+      filter: hue-rotate(0deg) saturate(1);
+    }
+    50% {
+      transform: translate3d(6%, -6%, 0) scale(1.06);
+      opacity: 0.95;
+      filter: hue-rotate(8deg) saturate(1.05);
+    }
+    100% {
+      transform: translate3d(-4%, -2%, 0) scale(0.98);
+      opacity: 0.9;
+      filter: hue-rotate(-6deg) saturate(1);
+    }
+  }
+
+  @keyframes blobMoveAlt {
+    0% {
+      transform: translate3d(0%, 6%, 0) scale(1);
+      opacity: 0.85;
+    }
+    50% {
+      transform: translate3d(-8%, -4%, 0) scale(1.08);
+      opacity: 0.95;
+    }
+    100% {
+      transform: translate3d(4%, 0%, 0) scale(0.96);
+      opacity: 0.88;
+    }
+  }
 }

@@ -156,9 +156,9 @@ export function PrivacyPolicyPage() {
                 If you have any questions about this Privacy Policy, please contact us:
               </p>
               <ul className="list-disc pl-6 space-y-2 marker:text-blue-500">
-                <li>Email: hello@diplomate.com</li>
-                <li>Phone: +91 98765 43210</li>
-                <li>WhatsApp: +91 98765 43210</li>
+                <li>Email: diplomate.helpdesk@gmail.com</li>
+                <li>Phone: +91 88302 17352</li>
+                <li>WhatsApp: +91 88302 17352</li>
               </ul>
             </section>
           </div>
