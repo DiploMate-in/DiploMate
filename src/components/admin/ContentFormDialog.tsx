@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 interface ContentFormDialogProps {
   open: boolean;
@@ -75,6 +76,11 @@ export function ContentFormDialog({
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  // Track images for cleanup
+  const [originalImages, setOriginalImages] = useState<string[]>([]);
+  const [sessionUploadedImages, setSessionUploadedImages] = useState<string[]>([]);
+
   const [form, setForm] = useState({
     title: '',
     department_id: '',
@@ -113,40 +119,61 @@ export function ContentFormDialog({
   }, []);
 
   useEffect(() => {
-    if (editingItem) {
-      setForm({
-        title: editingItem.title || '',
-        department_id: editingItem.department_id || '',
-        semester_id: editingItem.semester_id || '',
-        scheme: editingItem.scheme || '',
-        subject_id: editingItem.subject_id || '',
-        subject_name: editingItem.subject_name || '',
-        subject_code: editingItem.subject_code || '',
-        price: editingItem.price || 0,
-        description: editingItem.description || '',
-        file_url: editingItem.file_url || '',
-        preview_images: editingItem.preview_images?.join(', ') || '',
-        tags: editingItem.tags?.join(', ') || '',
-        downloads_allowed: editingItem.downloads_allowed || 3,
-        is_published: editingItem.is_published ?? true,
-      });
-    } else {
-      setForm({
-        title: '',
-        department_id: '',
-        semester_id: '',
-        scheme: '',
-        subject_id: '',
-        subject_name: '',
-        subject_code: '',
-        price: 0,
-        description: '',
-        file_url: '',
-        preview_images: '',
-        tags: '',
-        downloads_allowed: 3,
-        is_published: true,
-      });
+    const loadFormData = async () => {
+      if (editingItem?.id) {
+        // Fetch full details to avoid data loss (Blank Form Bug Fix)
+        const { data, error } = await supabase
+          .from('content_items')
+          .select('*')
+          .eq('id', editingItem.id)
+          .single();
+
+        if (data) {
+          const images = data.preview_images || [];
+          setOriginalImages(images);
+          setSessionUploadedImages([]);
+          setForm({
+            title: data.title || '',
+            department_id: data.department_id || '',
+            semester_id: data.semester_id || '',
+            scheme: (data.scheme as 'K' | 'I' | '') || '',
+            subject_id: data.subject_id || '',
+            subject_name: data.subject_name || '',
+            subject_code: data.subject_code || '',
+            price: data.price || 0,
+            description: data.description || '',
+            file_url: data.file_url || '',
+            preview_images: data.preview_images?.join(', ') || '',
+            tags: data.tags?.join(', ') || '',
+            downloads_allowed: data.downloads_allowed || 3,
+            is_published: data.is_published ?? true,
+          });
+        }
+      } else {
+        // Reset form for create mode
+        setOriginalImages([]);
+        setSessionUploadedImages([]);
+        setForm({
+          title: '',
+          department_id: '',
+          semester_id: '',
+          scheme: '',
+          subject_id: '',
+          subject_name: '',
+          subject_code: '',
+          price: 0,
+          description: '',
+          file_url: '',
+          preview_images: '',
+          tags: '',
+          downloads_allowed: 3,
+          is_published: true,
+        });
+      }
+    };
+
+    if (open) {
+      loadFormData();
     }
   }, [editingItem, open]);
 
@@ -212,6 +239,71 @@ export function ContentFormDialog({
     });
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    setUploading(true);
+
+    try {
+      // 1. Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('project_images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // 2. Get Public URL
+      const { data } = supabase.storage.from('project_images').getPublicUrl(filePath);
+      
+      if (data) {
+        const currentImages = form.preview_images
+          ? form.preview_images.split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+        
+        const newImages = [...currentImages, data.publicUrl];
+        
+        setSessionUploadedImages(prev => [...prev, data.publicUrl]);
+        setForm({
+          ...form,
+          preview_images: newImages.join(', '),
+        });
+        
+        toast.success('Image uploaded successfully');
+      }
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      if (error.message === 'Bucket not found') {
+        toast.error('Error: "project_images" bucket missing. Please run the SQL migration.');
+      } else {
+        toast.error(error.message || 'Failed to upload image');
+      }
+    } finally {
+      setUploading(false);
+      // Reset input
+      e.target.value = '';
+    }
+  };
+
+  const removeImage = (indexToRemove: number) => {
+    const currentImages = form.preview_images
+      ? form.preview_images.split(',').map(s => s.trim()).filter(Boolean)
+      : [];
+    
+    const newImages = currentImages.filter((_, index) => index !== indexToRemove);
+    
+    setForm({
+      ...form,
+      preview_images: newImages.join(', '),
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -267,6 +359,34 @@ export function ContentFormDialog({
         if (error) throw error;
         toast.success('Created successfully');
       }
+
+      // CLEANUP LOGIC: Delete images that were removed or replaced
+      const currentImages = form.preview_images
+        ? form.preview_images.split(',').map((s) => s.trim()).filter(Boolean)
+        : [];
+
+      const imagesToDelete = [
+        ...originalImages,
+        ...sessionUploadedImages,
+      ].filter((img) => !currentImages.includes(img));
+
+      // Deduplicate just in case
+      const uniqueImagesToDelete = [...new Set(imagesToDelete)];
+
+      if (uniqueImagesToDelete.length > 0) {
+        const pathsToDelete = uniqueImagesToDelete
+          .map((url) => {
+            const parts = url.split('/project_images/');
+            return parts.length > 1 ? parts[1] : null;
+          })
+          .filter((p) => p !== null) as string[];
+
+        if (pathsToDelete.length > 0) {
+          console.log('Cleaning up images:', pathsToDelete);
+          await supabase.storage.from('project_images').remove(pathsToDelete);
+        }
+      }
+
       onSuccess();
       onOpenChange(false);
     } catch (error: any) {
@@ -419,13 +539,75 @@ export function ContentFormDialog({
           </div>
 
           {/* Preview Images */}
-          <div className="space-y-2">
-            <Label>Preview Images (comma-separated URLs)</Label>
-            <Input
-              value={form.preview_images}
-              onChange={(e) => setForm({ ...form, preview_images: e.target.value })}
-              placeholder="https://..., https://..."
-            />
+          <div className="space-y-3">
+            <Label>Preview Images</Label>
+            
+            {/* Image List */}
+            {form.preview_images && (
+              <div className="grid grid-cols-3 gap-4 mb-2">
+                {form.preview_images.split(',').map((url, idx) => {
+                  const trimmedUrl = url.trim();
+                  if (!trimmedUrl) return null;
+                  return (
+                    <div key={idx} className="relative group aspect-video bg-muted rounded-lg overflow-hidden border border-border">
+                      <img 
+                        src={trimmedUrl} 
+                        alt={`Preview ${idx + 1}`} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+Image';
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(idx)}
+                        className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <Input
+                  value={form.preview_images}
+                  onChange={(e) => setForm({ ...form, preview_images: e.target.value })}
+                  placeholder="https://..., https://..."
+                  className="text-xs font-mono"
+                />
+              </div>
+              <div className="relative">
+                <input
+                  type="file"
+                  id="image-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={uploading}
+                  onClick={() => document.getElementById('image-upload')?.click()}
+                  className="gap-2"
+                >
+                  {uploading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
+                  Upload
+                </Button>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Upload images or paste URLs. Supported formats: JPG, PNG, WEBP.
+            </p>
           </div>
 
           {/* Tags */}

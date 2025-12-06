@@ -1,33 +1,89 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  department: string;
+  image: string;
+  color: string;
+}
 
 export function CapstonePreviewSection() {
-  const capstoneProjects = [
-    {
-      id: '1',
-      title: 'AI-Based Smart Attendance System',
-      description: 'Full final-year capstone with code, documentation, and report.',
-      department: 'AIML',
-      image: 'https://images.unsplash.com/photo-1526378800651-c32d170fe6f8?w=600&q=80',
-      color: '#2F6FED',
-    },
-    {
-      id: '2',
-      title: 'IoT Plant Monitoring & Automation',
-      description: 'Complete IoT solution with hardware integration and mobile app.',
-      department: 'CO',
-      image: 'https://images.unsplash.com/photo-1605387132052-357a341cc515?w=600&q=80',
-      color: '#35C2A0',
-    },
-    {
-      id: '3',
-      title: 'Object Detection Using YOLOv7',
-      description: 'Advanced computer vision project with real-time detection capabilities.',
-      department: 'AIML',
-      image: 'https://images.unsplash.com/photo-1569693799105-4eb645d89aea?w=600&q=80',
-      color: '#2F6FED',
-    },
-  ];
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('content_items')
+          .select(`
+            id,
+            title,
+            description,
+            preview_images,
+            departments (
+              name
+            )
+          `)
+          .eq('type', 'capstone')
+          .eq('is_published', true)
+          .limit(3)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          const mappedProjects = data.map((item: any) => {
+            // Determine color based on department (simple mapping)
+            const deptName = item.departments?.name || 'General';
+            let color = '#2F6FED'; // Default Blue
+            if (['CO', 'Computer', 'IT'].some(d => deptName.includes(d))) color = '#35C2A0'; // Green
+            
+            // Get first image or fallback
+            let image = 'https://images.unsplash.com/photo-1526378800651-c32d170fe6f8?w=600&q=80';
+            if (item.preview_images && item.preview_images.length > 0) {
+               image = item.preview_images[0];
+            }
+
+            return {
+              id: item.id,
+              title: item.title,
+              description: item.description || 'No description available.',
+              department: deptName,
+              image: image,
+              color: color
+            };
+          });
+          setProjects(mappedProjects);
+        }
+      } catch (error) {
+        console.error('Error fetching capstone projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 px-6 bg-white">
+        <div className="flex justify-center items-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (projects.length === 0) {
+    return null; // Don't show section if no projects
+  }
 
   return (
     <section className="py-20 px-6 bg-white">
@@ -47,76 +103,62 @@ export function CapstonePreviewSection() {
 
         {/* Project Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {capstoneProjects.map((project, idx) => (
-            <div
+          {projects.map((project, idx) => (
+            <Link
+              to={`/content/${project.id}`}
               key={project.id}
-              className="group rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1 card-shadow card-shadow-hover animate-slide-up"
+              className="group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 hover:-translate-y-1"
               style={{
-                background: 'white',
-                border: '1px solid rgba(0, 0, 0, 0.05)',
                 animationDelay: `${idx * 100}ms`,
                 animationFillMode: 'backwards',
               }}
             >
               {/* Thumbnail Image */}
-              <div className="overflow-hidden h-48 relative">
+              <div className="relative aspect-video overflow-hidden bg-slate-100">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+                
+                {/* Overlay Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 {/* Badge */}
                 <div
-                  className="absolute top-4 right-4 px-3 py-1.5 rounded-full backdrop-blur-md text-xs font-semibold tracking-wide"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    color: project.color,
-                    border: `1.5px solid ${project.color}30`,
-                  }}
+                  className="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md bg-white/90"
+                  style={{ color: project.color }}
                 >
-                  CAPSTONE
+                  Capstone
                 </div>
               </div>
 
               {/* Card Content */}
-              <div className="p-6">
-                <h3
-                  className="mb-3 transition-colors duration-200 group-hover:text-[#2F6FED] text-xl font-semibold leading-tight"
-                  style={{ color: '#1B1B1B' }}
-                >
-                  {project.title}
-                </h3>
-
-                <p className="mb-5 text-sm" style={{ color: '#4A4A4A', lineHeight: 1.6 }}>
-                  {project.description}
-                </p>
+              <div className="flex flex-col flex-1 p-5">
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                    {project.description}
+                  </p>
+                </div>
 
                 {/* Bottom Section */}
-                <div
-                  className="flex items-center justify-between pt-4 border-t"
-                  style={{ borderColor: 'rgba(0, 0, 0, 0.06)' }}
-                >
+                <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
                   <span
-                    className="px-3 py-1.5 rounded-full text-xs font-semibold"
-                    style={{
-                      color: project.color,
-                      border: `1.5px solid ${project.color}40`,
-                    }}
+                    className="text-xs font-medium px-2.5 py-1 rounded-md bg-slate-50 text-slate-600"
                   >
                     {project.department}
                   </span>
 
-                  <Link
-                    to={`/content/${project.id}`}
-                    className="px-5 py-2 rounded-xl font-medium transition-all duration-200 hover:bg-[#E9F0FF] text-sm"
-                    style={{ color: '#2F6FED', border: '1.5px solid #2F6FED' }}
-                  >
-                    View Project
-                  </Link>
+                  <div className="flex items-center text-sm font-semibold text-primary group-hover:translate-x-1 transition-transform">
+                    View Details
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -124,21 +166,10 @@ export function CapstonePreviewSection() {
         <div className="text-center">
           <Link
             to="/projects/capstone"
-            className="inline-block px-8 py-4 rounded-xl font-semibold transition-all duration-200 hover:scale-105 mb-4 text-white btn-shadow-primary"
-            style={{ background: '#2F6FED' }}
+            className="inline-flex items-center justify-center px-8 py-4 rounded-xl font-semibold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-200"
           >
             View All Capstone Projects
           </Link>
-          <div>
-            <Link
-              to="/browse?type=capstone"
-              className="group inline-flex items-center gap-2 transition-all duration-200 text-sm"
-              style={{ color: '#2F6FED' }}
-            >
-              <span className="group-hover:underline">Browse department-wise capstone ideas</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
         </div>
       </div>
     </section>

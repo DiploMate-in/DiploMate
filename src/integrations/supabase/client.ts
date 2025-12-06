@@ -9,6 +9,7 @@ const SUPABASE_PUBLISHABLE_KEY = env.supabase.anonKey;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Client initialization
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,

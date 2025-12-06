@@ -100,13 +100,40 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
-            foreignKeyName: 'content_items_subject_id_fkey';
-            columns: ['subject_id'];
+            foreignKeyName: 'content_items_semester_id_fkey';
+            columns: ['semester_id'];
             isOneToOne: false;
-            referencedRelation: 'subjects';
+            referencedRelation: 'semesters';
             referencedColumns: ['id'];
           },
         ];
+      };
+      system_settings: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          key: string;
+          updated_at: string;
+          value: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          key: string;
+          updated_at?: string;
+          value?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          key?: string;
+          updated_at?: string;
+          value?: string | null;
+        };
+        Relationships: [];
       };
       coupons: {
         Row: {

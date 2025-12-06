@@ -264,7 +264,7 @@ export function ContentDetail() {
           {/* Left: Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-[4/3] bg-secondary rounded-2xl overflow-hidden">
+            <div className="relative aspect-video bg-black/5 dark:bg-white/5 rounded-2xl overflow-hidden border border-border/50">
               {previewImages.length > 0 ? (
                 isGoogleDoc(previewImages[currentImageIndex]) ? (
                   <iframe
@@ -277,7 +277,7 @@ export function ContentDetail() {
                   <img
                     src={previewImages[currentImageIndex]}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 )
               ) : (

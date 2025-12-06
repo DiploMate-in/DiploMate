@@ -91,14 +91,42 @@ export function AdminContent() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this item?')) return;
+    if (!confirm('Are you sure you want to delete this item? This will also delete associated images.')) return;
 
-    const { error } = await supabase.from('content_items').delete().eq('id', id);
-    if (error) {
-      toast.error('Failed to delete');
-    } else {
+    try {
+      // 1. Fetch item to get images for cleanup (Cascading Delete)
+      const { data: item } = await supabase
+        .from('content_items')
+        .select('preview_images')
+        .eq('id', id)
+        .single();
+
+      // 2. Delete images from storage if they exist
+      if (item?.preview_images && item.preview_images.length > 0) {
+        const filesToDelete = item.preview_images
+          .map((url: string) => {
+            // Extract path from URL: .../project_images/filename.ext
+            const parts = url.split('/project_images/');
+            return parts.length > 1 ? parts[1] : null;
+          })
+          .filter((path: string | null) => path !== null) as string[];
+
+        if (filesToDelete.length > 0) {
+          const { error: storageError } = await supabase.storage.from('project_images').remove(filesToDelete);
+          if (storageError) console.error('Failed to delete images from storage:', storageError);
+        }
+      }
+
+      // 3. Delete the database record
+      const { error } = await supabase.from('content_items').delete().eq('id', id);
+      
+      if (error) throw error;
+
       toast.success('Deleted successfully');
       fetchData();
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Failed to delete item');
     }
   };
 

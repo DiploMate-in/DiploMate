@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Star, Download, Sparkles, FolderKanban, Wrench } from 'lucide-react';
+import { Search, Star, Download, Sparkles, FolderKanban, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -24,6 +24,7 @@ interface Project {
   rating: number | null;
   review_count: number | null;
   tags: string[] | null;
+  preview_images: string[] | null;
   departments: { name: string; code: string } | null;
 }
 
@@ -89,7 +90,7 @@ export default function ProjectsPage() {
           .from('content_items')
           .select(
             `
-            id, title, description, price, rating, review_count, tags,
+            id, title, description, price, rating, review_count, tags, preview_images,
             departments:department_id(name, code)
           `,
           )
@@ -163,7 +164,7 @@ export default function ProjectsPage() {
                 >
                   Contact on WhatsApp
                 </a>
-              </Button>>
+              </Button>
             </div>
           </div>
         </div>
@@ -252,50 +253,134 @@ export default function ProjectsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <div
-                key={project.id}
-                className="bg-card border border-border rounded-xl p-5 hover:shadow-lg transition-all duration-300"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <Badge className="bg-amber-500 text-white hover:bg-amber-600">PREMIUM</Badge>
-                  {project.rating && (
-                    <div className="flex items-center gap-1 text-amber-500">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span className="text-sm font-medium">{project.rating}</span>
-                    </div>
-                  )}
-                </div>
+            {filteredProjects.map((project, index) => {
+              // Helper to check if url is a google doc
+              const isGoogleDoc = (url: string) => {
+                return url.includes('docs.google.com') || url.includes('drive.google.com');
+              };
 
-                <h3 className="font-semibold text-foreground mb-1 line-clamp-2">{project.title}</h3>
+              // Fallback images if no preview_image is available
+              const fallbackImages = [
+                'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80', // Coding
+                'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80', // Hardware
+                'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80', // Cyber
+                'https://images.unsplash.com/photo-1531297461136-821960712637?w=800&q=80', // AI
+                'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80', // Robot
+              ];
+              
+              // Find the first valid image that is NOT a google doc
+              const validPreviewImage = project.preview_images?.find(img => !isGoogleDoc(img));
 
-                {project.departments && (
-                  <p className="text-sm text-primary mb-3">{project.departments.name}</p>
-                )}
+              const displayImage = validPreviewImage || fallbackImages[index % fallbackImages.length];
 
-                {project.tags && project.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {project.tags.slice(0, 4).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
+              return (
+                <div
+                  key={project.id}
+                  className="group relative bg-white dark:bg-card rounded-2xl overflow-hidden card-shadow card-shadow-hover transition-all duration-300 hover:-translate-y-1 flex flex-col h-full border border-border/50"
+                >
+                  {/* Image Header */}
+                  <div className="h-48 relative overflow-hidden">
+                    <img 
+                      src={displayImage} 
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    
+                    {/* Gradient Overlay for text readability if needed, or just style */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+
+                    {/* Floating Badges */}
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <Badge className="bg-white/95 text-foreground backdrop-blur-md shadow-sm border-0 hover:bg-white px-3 py-1.5">
+                        <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-500 fill-amber-500" /> 
+                        <span className="font-bold tracking-wide text-xs">PREMIUM</span>
                       </Badge>
-                    ))}
+                    </div>
+                    
+                    {/* Department Badge on Image */}
+                    {project.departments && (
+                      <div className="absolute bottom-4 left-4">
+                        <Badge variant="secondary" className="backdrop-blur-md bg-white/90 text-foreground border-0 shadow-sm">
+                          {project.departments.name}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
-                )}
 
-                <div className="flex items-center justify-between pt-3 border-t border-border">
-                  <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                    <Download className="w-4 h-4" />
-                    <span>{Math.floor(Math.random() * 200) + 50}</span>
+                  {/* Content Body */}
+                  <div className="p-6 flex flex-col flex-grow">
+                    {/* Rating & Reviews */}
+                    <div className="flex items-center gap-2 mb-3">
+                      {project.rating ? (
+                        <div className="flex items-center gap-1 text-amber-500 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-md">
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                          <span className="text-sm font-bold">{project.rating}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-muted-foreground bg-secondary px-2 py-0.5 rounded-md">
+                          <Star className="w-3.5 h-3.5" />
+                          <span className="text-xs font-medium">New</span>
+                        </div>
+                      )}
+                      <span className="text-xs text-muted-foreground">• {Math.floor(Math.random() * 50) + 10} sold</span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                      {project.title}
+                    </h3>
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.tags?.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10px] font-medium px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground border border-border/50"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Features List */}
+                    <div className="mt-auto space-y-2.5 mb-6 pt-4 border-t border-border/40">
+                      <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                        <div className="p-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 shrink-0">
+                          <CheckCircle2 className="w-3 h-3" />
+                        </div>
+                        <span className="truncate">Complete Documentation & Report</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                        <div className="p-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 shrink-0">
+                          <CheckCircle2 className="w-3 h-3" />
+                        </div>
+                        <span className="truncate">Source Code & PPT Included</span>
+                      </div>
+                    </div>
+
+                    {/* Footer Action */}
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Price</p>
+                        <div className="flex items-baseline gap-2">
+                          <p className="text-2xl font-bold text-foreground">₹{project.price}</p>
+                          {project.price > 500 && (
+                            <p className="text-sm text-muted-foreground line-through decoration-red-500/50">
+                              ₹{Math.round(project.price * 1.4)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <Link to={`/content/${project.id}`} className="flex-1 max-w-[140px]">
+                        <Button className="w-full rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-primary hover:bg-primary/90 h-11">
+                          Buy Now <ArrowRight className="w-4 h-4 ml-1.5" />
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                  <Link to={`/content/${project.id}`}>
-                    <Button size="sm" className="bg-teal-500 hover:bg-teal-600">
-                      ₹{project.price}
-                    </Button>
-                  </Link>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
